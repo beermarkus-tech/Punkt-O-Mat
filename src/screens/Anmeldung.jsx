@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
 import AppIcon from '../components/AppIcon'
+import BuildTag from '../components/BuildTag'
 
 export default function Anmeldung() {
   const [error, setError] = useState(null)
@@ -29,6 +30,7 @@ export default function Anmeldung() {
         Mit Google anmelden
       </button>
       {error && <p className="text-accent">{error}</p>}
+      <BuildTag className="fixed bottom-4" />
     </div>
   )
 }

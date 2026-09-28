@@ -29,7 +29,7 @@ const roundHalf = (x) => Math.round((x + 1e-9) * 2) / 2;
 - Worked example: Brezel, `kcal_100 = 238`, `fat_100 = 3.6` → per-100 g value = 3.6/9 + 238/60 = 0.4 + 3.967 = 4.367. One "Klein" (70 g), qty 1 → 3.057 → **3**. Qty 2 → 6.113 → **6**. Qty 0.5 → 1.528 → **1.5**.
 
 ### 1.2 Reference value (display only)
-Lists (Datenbank, Hinzufügen) show a reference value = `fat_100 / 9 + kcal_100 / 60`, i.e. **points per 100 g, one decimal, NOT rounded to 0.5** (e.g. "4,4"). This value is for browsing only — it is never stored and never used in any calculation.
+Lists (Datenbank, Hinzufügen) and the food form show a reference value = `fat_100 / 9 + kcal_100 / 60` (points per 100 g), **rounded to the nearest 0.5 with `roundHalf` for display** (e.g. 4.367 → "4,5"). This rounding is visual only — the value is never stored and never used in any calculation; the real rounding happens once, when an entry is logged (§1.1).
 
 ### 1.3 Sport points
 Each sport has `pointsPer30Min` (positive number). For a session of `minutes`:
@@ -68,7 +68,7 @@ for each day Monday..Sunday (in order):
 
 ### 1.5 Number display (German format)
 - Points: comma decimal, no trailing ",0" → "3", "4,5", "15". Negative with a real minus sign "−".
-- Reference values (§1.2): always one decimal → "4,4", "6,0".
+- Reference values (§1.2): same format as points → "4,5", "6".
 - Weight: always one decimal + "kg" → "102,0 kg".
 - Dates: e.g. "So, 27. Sept."; header label "HEUTE" / "GESTERN" / "MORGEN" when applicable, otherwise the weekday.
 
@@ -155,6 +155,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Navigation.** Five-tab bottom bar: Heute, Hinzufügen, Datenbank, Gewicht, Einstellungen. No URL router — tabs are React state (GitHub Pages has no server-side routing).
 - **Loading & errors.** While data loads, show a simple spinner. If a write fails, show a short German toast ("Speichern fehlgeschlagen") — no silent failures.
 - **Offline.** Firestore offline persistence is enabled; logging works without signal and syncs later.
+- **Build number.** A small "Build {n}" label is visible on every screen (top right; bottom of Anmeldung). `n` is the GitHub Actions run number of the deploy, so it increases with every push to `main`.
 - **Confirmation.** Every delete asks "Wirklich löschen?" (Abbrechen / Löschen).
 
 ---
@@ -202,7 +203,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 ### 4.3 Datenbank — mockup `datenbank.pdf`
 - Segmented control: Lebensmittel / Sport / Tracker. Floating "+" button adds a new item of the active type.
 - **Lebensmittel list:** search field (same matching as §4.2), grouped by first letter (Ä/Ö/Ü sort with A/O/U), each row: name, subtitle = remark if present else "{category} · {n} Größen", reference value right-aligned. Tap → edit form.
-- **Food form:** Name*, Kategorie* (text with autocomplete), Bemerkung, kcal pro 100 g*, Fett pro 100 g*, units list (add / rename / change grams / delete; "100 g" row locked). Validation: required fields, numbers ≥ 0, unit grams > 0, unit labels unique within the food, food name unique. Buttons: Speichern, Löschen (edit only).
+- **Food form:** Name*, Kategorie* (dropdown of existing categories, alphabetical, plus "+ Neue Kategorie …" which switches to a text field; a typed name matching an existing category ignoring case uses the existing spelling), Bemerkung, kcal pro 100 g*, Fett pro 100 g*, units list (add / rename / change grams / delete; "100 g" row locked). Validation: required fields, numbers ≥ 0, unit grams > 0, unit labels unique within the food, food name unique. Buttons: Speichern, Löschen (edit only).
 - **Sport list/form:** name*, Punkte pro 30 Min* (> 0, 0.5 steps).
 - **Tracker list/form:** name*, Einheit*, Tagesziel*, Schritt (default 1), icon (picker from §7.3), color (picker from §7.3), order (via up/down arrows in the list).
 - Deleting a food or sport never affects past logs (snapshots, §2).
@@ -289,6 +290,9 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Aktivität is not a food Rubrik; sport entries go there automatically. *(2026-09-28)*
 - Allowed Google account: beer.markus@gmail.com. *(2026-09-28)*
 - Firebase: shared project `exercise-tracker`, own named database `punkt-o-mat` (eur3); Auth is shared with Markus's other GitHub Pages apps. *(2026-09-28)*
+- Reference value in lists is shown rounded to 0.5 (display only). *(2026-09-28)*
+- Kategorie is picked from existing categories or created on the fly. *(2026-09-28)*
+- Small build number visible on screen, increasing with every deploy. *(2026-09-28)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

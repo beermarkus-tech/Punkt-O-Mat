@@ -4,6 +4,7 @@ import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
 import { DataProvider } from './DataContext'
 import Datenbank from './screens/Datenbank'
+import BuildTag from './components/BuildTag'
 
 // Five-tab bottom navigation, spec.md §3 / §7.3. Tabs are React state, no router.
 const TABS = [
@@ -21,7 +22,8 @@ export default function Shell({ user }) {
   return (
     <DataProvider>
     <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col">
-      <main className="flex-1 px-4 pt-6 pb-28">
+      <main className="relative flex-1 px-4 pt-6 pb-28">
+        <BuildTag className="absolute top-1.5 right-4" />
         {tab === 'datenbank' ? (
           <Datenbank />
         ) : (

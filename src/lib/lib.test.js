@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { formatNumber, formatPoints, formatRef, parseNumber, toInput } from './format'
 import { letterOf, matches, normalize } from './text'
-import { refValue } from './points'
+import { displayRef, refValue, roundHalf } from './points'
 
 describe('refValue (§1.2)', () => {
   it('matches the Brezel example: 3.6 g fat, 238 kcal → 4.367', () => {
@@ -10,6 +10,35 @@ describe('refValue (§1.2)', () => {
   })
   it('shows one decimal even for whole numbers', () => {
     expect(formatRef(refValue(360, 0))).toBe('6,0')
+  })
+})
+
+describe('roundHalf (§1.1)', () => {
+  it('rounds to the nearest 0.5', () => {
+    expect(roundHalf(3.057)).toBe(3)
+    expect(roundHalf(6.113)).toBe(6)
+    expect(roundHalf(1.528)).toBe(1.5)
+    expect(roundHalf(4.367)).toBe(4.5)
+    expect(roundHalf(4.74)).toBe(4.5)
+    expect(roundHalf(4.76)).toBe(5)
+  })
+  it('rounds ties up, even with float error', () => {
+    expect(roundHalf(0.25)).toBe(0.5)
+    expect(roundHalf(0.75)).toBe(1)
+    expect(roundHalf(2.7499999999999996)).toBe(3)
+  })
+  it('matches the Brezel worked example', () => {
+    const per100 = refValue(238, 3.6)
+    expect(roundHalf(1 * (70 / 100) * per100)).toBe(3)
+    expect(roundHalf(2 * (70 / 100) * per100)).toBe(6)
+    expect(roundHalf(0.5 * (70 / 100) * per100)).toBe(1.5)
+  })
+})
+
+describe('displayRef (§1.2)', () => {
+  it('shows the reference value rounded to 0.5', () => {
+    expect(formatPoints(displayRef(238, 3.6))).toBe('4,5')
+    expect(formatPoints(displayRef(360, 0))).toBe('6')
   })
 })
 

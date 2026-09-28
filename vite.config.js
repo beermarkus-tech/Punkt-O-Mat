@@ -7,6 +7,10 @@ const base = '/Punkt-O-Mat/'
 
 export default defineConfig({
   base,
+  define: {
+    // Build number = GitHub Actions run number of the deploy; "dev" locally.
+    __BUILD__: JSON.stringify(process.env.VITE_BUILD ?? 'dev'),
+  },
   plugins: [
     react(),
     tailwindcss(),

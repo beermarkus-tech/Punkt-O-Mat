@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react'
 import { useData } from '../../DataContext'
 import SearchInput from '../../components/SearchInput'
 import Spinner from '../../components/Spinner'
-import { formatRef } from '../../lib/format'
-import { refValue } from '../../lib/points'
+import { formatPoints } from '../../lib/format'
+import { displayRef } from '../../lib/points'
 import { byName, letterOf, matches } from '../../lib/text'
 
 function subtitle(food) {
@@ -49,7 +49,7 @@ export default function FoodList({ onOpen }) {
                 <span className="block truncate text-[17px] font-semibold">{f.name}</span>
                 <span className="block truncate text-sm text-muted">{subtitle(f)}</span>
               </span>
-              <span className="text-lg font-bold text-primary">{formatRef(refValue(f.kcal_100, f.fat_100))}</span>
+              <span className="text-lg font-bold text-primary">{formatPoints(displayRef(f.kcal_100, f.fat_100))}</span>
             </button>
           ))}
         </section>

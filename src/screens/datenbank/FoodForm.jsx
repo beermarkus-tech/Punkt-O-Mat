@@ -7,9 +7,10 @@ import { useToast } from '../../components/ToastContext'
 import { persist } from '../../data'
 import Sheet from '../../components/Sheet'
 import ConfirmDialog from '../../components/ConfirmDialog'
+import CategoryPicker from './CategoryPicker'
 import { deleteButtonClass, Field, inputClass, numberError, primaryButtonClass } from '../../components/form'
-import { formatRef, parseNumber, toInput } from '../../lib/format'
-import { refValue } from '../../lib/points'
+import { formatPoints, parseNumber, toInput } from '../../lib/format'
+import { displayRef } from '../../lib/points'
 
 // First unit of every food: fixed, never editable or deletable (spec.md §2).
 const DEFAULT_UNIT = { label: '100 g', grams: 100 }
@@ -66,7 +67,7 @@ export default function FoodForm({ food, initialName = '', onClose }) {
 
   const k = parseNumber(kcal)
   const f = parseNumber(fat)
-  const preview = k >= 0 && f >= 0 ? formatRef(refValue(k, f)) : null
+  const preview = k >= 0 && f >= 0 ? formatPoints(displayRef(k, f)) : null
 
   const updateUnit = (key, field, value) => setUnits((us) => us.map((u) => (u.key === key ? { ...u, [field]: value } : u)))
 
@@ -75,7 +76,7 @@ export default function FoodForm({ food, initialName = '', onClose }) {
     if (Object.keys(errors).length) return
     const data = {
       name: name.trim(),
-      category: category.trim(),
+      category: categories.find((c) => c.toLowerCase() === category.trim().toLowerCase()) ?? category.trim(),
       remark: remark.trim() || null,
       kcal_100: k,
       fat_100: f,
@@ -113,17 +114,7 @@ export default function FoodForm({ food, initialName = '', onClose }) {
         <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass(shown.name)} />
       </Field>
       <Field label="Kategorie" required error={shown.category}>
-        <input
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          list="food-categories"
-          className={inputClass(shown.category)}
-        />
-        <datalist id="food-categories">
-          {categories.map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
+        <CategoryPicker value={category} onChange={setCategory} categories={categories} error={shown.category} />
       </Field>
       <Field label="Bemerkung">
         <input value={remark} onChange={(e) => setRemark(e.target.value)} className={inputClass()} />
