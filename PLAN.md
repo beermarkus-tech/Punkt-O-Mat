@@ -11,6 +11,7 @@ Staged phases, each with a concrete deliverable Markus can test on his phone. Re
 - GitHub Actions workflow: push to `main` → build → deploy to Pages
 - Firebase: confirm Firestore exists (EU region), enable Google provider, add `{username}.github.io` to authorized domains (§5)
 - Firestore rules from §6 pasted in the console; `ALLOWED_EMAIL` constant in the app
+- App icon: design options, Markus picks one; export as PWA icons (incl. maskable) and favicon
 - Firestore offline persistence; PWA manifest + icons (§5)
 - Design tokens from §7 set up in Tailwind config; bottom nav with lucide icons
 - First-launch seeding: `settings/config` defaults + the two trackers (§2)

@@ -241,14 +241,14 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
       allow read, write: if request.auth != null
-        && request.auth.token.email == "MARKUS_GOOGLE_EMAIL"
+        && request.auth.token.email == "beer.markus@gmail.com"
         && request.auth.token.email_verified == true;
     }
   }
 }
 ```
 
-The same email is a constant in the app (`ALLOWED_EMAIL`) to show the "Kein Zugriff" screen (§4.0). Rules are pasted into the Firebase console (Firestore → Rules) — no Firebase CLI needed. Markus provides the real email during Phase 0.
+The same email is a constant in the app (`ALLOWED_EMAIL`) to show the "Kein Zugriff" screen (§4.0). Rules are pasted into the Firebase console (Firestore → Rules) — no Firebase CLI needed. Allowed email (confirmed by Markus): `beer.markus@gmail.com`.
 
 ## 7. Visual design
 
@@ -286,6 +286,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Log entries store food/sport snapshots; weekly-bonus usage is computed, not stored (`weeklyBonusUsed` removed). *(2026-09-28)*
 - Settings changes apply to today and future days only (per-day snapshot). *(2026-09-28)*
 - Aktivität is not a food Rubrik; sport entries go there automatically. *(2026-09-28)*
+- Allowed Google account: beer.markus@gmail.com. *(2026-09-28)*
 
 ## 9. Out of scope for v1
 
