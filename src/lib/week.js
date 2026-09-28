@@ -26,7 +26,7 @@ export function computeWeek(dates, logs, settings) {
     const deficit = overflow - fromPool
     const remaining = overflow > 0 ? 0 - deficit : dayBudget - foodTotal // "0 -" avoids -0
 
-    days[date] = { foodTotal, sportTotal, dailyAllowance, dayBudget, remaining, poolLeft }
+    days[date] = { foodTotal, sportTotal, dailyAllowance, dayBudget, remaining, poolLeft, overflow, fromPool, deficit }
   }
   return { weeklyBonus, days }
 }

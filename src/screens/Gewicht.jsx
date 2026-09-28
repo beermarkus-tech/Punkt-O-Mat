@@ -6,11 +6,18 @@ import { useToast } from '../components/ToastContext'
 import Spinner from '../components/Spinner'
 import Chip from '../components/Chip'
 import { persist } from '../data'
-import { todayId } from '../lib/dates'
+import { useLogsRange } from '../hooks/useWeekLogs'
+import { addDays, dayMs, todayId, weekDates } from '../lib/dates'
+import { pointsHistory } from '../lib/history'
 import { updateLog } from '../lib/log'
 import { pointsInRange, rangeStart, RANGES, weightStats } from '../lib/weight'
 import { formatWeight, WeightSheet } from './heute/WeightRow'
 import WeightChart from './gewicht/WeightChart'
+import PointsChart, { PointsLegend } from './gewicht/PointsChart'
+
+const HALF_DAY = 43200000
+// Weekly points bars for ranges longer than one month (Markus, 2026-09-28).
+const isWeekly = (range) => range === '3m' || range === 'all'
 
 const kg = (x) => x.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const signedKg = (x) => (x > 0 ? `+${kg(x)}` : x < 0 ? `−${kg(-x)}` : kg(0))
@@ -44,24 +51,55 @@ export default function Gewicht() {
   const [range, setRange] = useState('1m')
   const [editing, setEditing] = useState(false)
 
+  const weekly = isWeekly(range)
+  const start = rangeStart(range, today)
+  // Whole weeks are loaded so the weekly bonus is computed exactly as on Heute.
+  const logs = useLogsRange(start ? weekDates(start)[0] : '2000-01-01', weekDates(today)[6])
+
   const points = weights ? pointsInRange(weights, range, today) : []
   const stats = weightStats(points)
-  const from = rangeStart(range, today) ?? points[0]?.date ?? today
+
+  // "Alles" starts at the earliest weight or log.
+  const firstLog = logs && Object.keys(logs).filter((d) => d <= today).sort()[0]
+  const from = start ?? [points[0]?.date, firstLog].filter(Boolean).sort()[0] ?? today
+  // Both charts share one time axis. Daily bars sit on the day, so pad half a day each side.
+  const xDomain = weekly
+    ? [dayMs(weekDates(from)[0]), dayMs(addDays(weekDates(today)[6], 1))]
+    : [dayMs(from) - HALF_DAY, dayMs(today) + HALF_DAY]
+  const bars = logs ? pointsHistory({ from, to: today, logs, settings, weekly }) : []
+  const hasBars = bars.some((b) => !b.empty)
+  const allowance = settings?.dailyAllowance ?? 30
+  const reference = weekly ? 7 * allowance + (settings?.weeklyBonus ?? 20) : allowance
+  const syncId = weekly ? undefined : 'gewicht'
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl font-extrabold">Gewicht</h1>
       <Stats stats={stats} />
 
-      <div className="rounded-card border border-border bg-card px-2 pt-2 pb-1">
-        {weights === undefined ? (
+      <div className="flex flex-col gap-1 rounded-card border border-border bg-card px-2 pt-3 pb-3">
+        {weights === undefined || logs === undefined ? (
           <Spinner inline />
-        ) : points.length ? (
-          <WeightChart points={points} from={from} to={today} />
         ) : (
-          <p className="flex h-80 items-center justify-center px-6 text-center text-muted">
-            Keine Messungen in diesem Zeitraum
-          </p>
+          <>
+            <h2 className="px-2 text-sm font-semibold text-muted">Gewicht (kg)</h2>
+            {points.length ? (
+              <WeightChart points={points} xDomain={xDomain} syncId={syncId} />
+            ) : (
+              <p className="flex h-24 items-center justify-center px-6 text-center text-muted">Keine Messungen in diesem Zeitraum</p>
+            )}
+            <h2 className="mt-3 border-t border-border px-2 pt-3 text-sm font-semibold text-muted">
+              {weekly ? 'Punkte pro Woche' : 'Punkte pro Tag'}
+            </h2>
+            {hasBars ? (
+              <>
+                <PointsChart bars={bars} xDomain={xDomain} syncId={syncId} reference={reference} />
+                <PointsLegend />
+              </>
+            ) : (
+              <p className="flex h-24 items-center justify-center px-6 text-center text-muted">Keine Einträge in diesem Zeitraum</p>
+            )}
+          </>
         )}
       </div>
 

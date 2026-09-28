@@ -229,7 +229,8 @@ A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g G
 ### 4.4 Gewicht — mockup `gewicht.pdf`
 - **Stats row:** START / HEUTE / DELTA / MAX / MIN, all computed **over the selected range**: Start = earliest weight in range, Heute = most recent weight in range, Delta = Heute − Start (signed, "−4,0"), Max/Min over range. No data → "–".
 - **Chart:** line chart with dots (Recharts), x-axis = real time scale (gaps between measurements stay proportional), y-axis auto-scaled with ~1 kg padding, 4 horizontal gridlines, German date ticks "18.11.".
-- **Range toggle:** 2 Wochen / 1 Monat / 3 Monate / Alles, counted back from today. Default: 1 Monat.
+- **Points chart below the weight chart** (same card, same time axis, never a second y-axis on the weight chart): stacked bars of eaten points, split into **within the day budget** (primary green), **from the weekly bonus** (light green) and **beyond the bonus** = negative Verbleibend (orange), computed with the same live week logic as Heute (§1.4). A dashed line marks the budget. Legend below the bars. Tapping a day in either chart shows that day in both (daily mode). **Daily bars** for 2 Wochen / 1 Monat (dashed line = daily allowance); **weekly bars** (Monday–Sunday totals, dashed line = 7 × daily allowance + weekly bonus) for 3 Monate / Alles. Days/weeks without logs show no bar.
+- **Range toggle:** 2 Wochen / 1 Monat / 3 Monate / Alles, counted back from today. Default: 1 Monat. Scopes both charts and the stats row.
 - **"Gewicht eintragen":** writes to **today's** dailyLog (not the selected date), same validation as §4.1.
 - Data source: `weight` field of `dailyLogs` (query docs where `weight != null`).
 
@@ -312,6 +313,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Kategorie is picked from existing categories or created on the fly. *(2026-09-28)*
 - Small build number visible on screen, increasing with every deploy. *(2026-09-28)*
 - Recipes: a food of type "recipe" built from ingredients, values derived live from current ingredient foods, "Ergibt … Portionen" field; built as Phase 3b before Gewicht. *(2026-09-28)*
+- Gewicht shows points too: a separate stacked-bar chart on the same time axis instead of a second y-axis (Claude pushed back on dual axes; Markus agreed). Weekly bars for ranges longer than one month. *(2026-09-28)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1
