@@ -1,0 +1,34 @@
+# Punkt-o-Mat — Dev Log
+
+Append-only. One entry per work session, newest at the bottom. Never edit or delete a past entry — correct forward in a new one.
+
+## 2026-09-27 — Spec, plan, and mockups finalized; no code yet
+
+**What was built or changed:**
+- spec.md v1 written and agreed: formula/rounding rule, Firestore data model, screen list, stack decision.
+- Decisions resolved: weekly bonus = 20 pts/week, automatic overflow once the daily 30 is exceeded, Monday–Sunday, no rollover; Sporttag/XX-Tag flags from the old sheet dropped; sections auto-suggested by time of day (overridable); visual style deferred to match Haushaltsbuch's look.
+- PLAN.md written: 8 phases (Infrastructure → Datenbank → Hinzufügen → Heute → Gewicht → Einstellungen → optional data migration → polish).
+- Five mobile mockups published (Heute, Hinzufügen, Datenbank, Gewicht, Einstellungen) — visual reference only, not yet wired to real data or logic.
+- This CLAUDE.md adapted from the Haushaltsbuch project's version.
+
+**State of the build:** nothing implemented. No repo, no Firebase project, no code.
+
+**Open items (non-blocking, for a natural checkpoint):** none yet — this is the design phase; nothing has hit a real ambiguity during implementation because implementation hasn't started.
+
+**Next session should:** start PLAN.md Phase 0 — create the GitHub repo, scaffold React/Vite/Tailwind, set up the Firebase project (Auth restricted to Markus's Google account, Firestore, hosting target), and confirm a working deploy pipeline before writing any feature code. Walk Markus through each infrastructure step per this file's "Infrastructure setup" section — don't assume he's done this before.
+
+## 2026-09-28 — Spec audit (v1.1); infrastructure partly created by Markus
+
+**What was changed (design phase, pre-Phase 0):**
+- Full audit of spec.md against PLAN.md, CLAUDE.md and the five mockups. spec.md rewritten as v1.1; PLAN.md and CLAUDE.md updated to match. BUILD_LOG.md deleted — it duplicated this file (leftover naming from the Haushaltsbuch project).
+- New decisions from Markus (recorded in spec.md §8): sport earns points back; sport logged via a Lebensmittel/Sport toggle on Hinzufügen; quantity in 0.5 steps plus free grams; week start fixed Monday.
+- Gaps closed in the spec: exact rounding (ties up, float-safe) with worked example; weekly overflow algorithm (computed live, not stored); per-day settings snapshot; food/sport snapshots in log entries; entry IDs; local-date document IDs; time-of-day ranges; tracker decrement and seeding with fixed IDs; login / "Kein Zugriff" screen; weight stats per range; German number formats; GitHub Pages deployment details (`base`, authorized domain, no router); email-based security rules; design tokens; validation rules; mockup-vs-spec precedence.
+- Mockups should be committed to `docs/mockups/` as heute.pdf, hinzufuegen.pdf, datenbank.pdf, gewicht.pdf, einstellungen.pdf.
+
+**State of the infrastructure (per Markus, not yet verified):** GitHub repo `Punkt-O-Mat` exists; GitHub Pages source = GitHub Actions; Firebase project `punkt-o-mat` exists. Unknown: whether Firestore database is created and in which region, whether Google sign-in is enabled, whether a web app is registered. No code yet.
+
+**Open items (non-blocking):**
+- Phase 6: structure of the old Excel catalog (are nutrients per 100 g or per portion? are there recipes like Bananenshake with only totals?). Needs the file from Markus before Phase 6 starts.
+- Time-of-day ranges (spec §4.2) and tracker "−" button (§4.1) are sensible defaults — Markus may want to adjust once he uses the app.
+
+**Next session should:** start Phase 0 by collecting Markus's GitHub username and Google email, then verify (not redo) the repo, Pages and Firebase project, and walk him through the remaining console steps one at a time.
