@@ -9,8 +9,8 @@ import Sheet from '../../components/Sheet'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import CategoryPicker from './CategoryPicker'
 import { deleteButtonClass, Field, inputClass, numberError, primaryButtonClass } from '../../components/form'
-import { formatPoints, parseNumber, toInput } from '../../lib/format'
-import { displayRef } from '../../lib/points'
+import { formatPoints, formatRef, parseNumber, toInput } from '../../lib/format'
+import { displayRef, refValue } from '../../lib/points'
 
 // First unit of every food: fixed, never editable or deletable (spec.md §2).
 const DEFAULT_UNIT = { label: '100 g', grams: 100 }
@@ -68,6 +68,10 @@ export default function FoodForm({ food, initialName = '', onClose }) {
   const k = parseNumber(kcal)
   const f = parseNumber(fat)
   const preview = k >= 0 && f >= 0 ? formatPoints(displayRef(k, f)) : null
+  const unitPoints = (gramsText) => {
+    const g = parseNumber(gramsText)
+    return k >= 0 && f >= 0 && g > 0 ? formatRef((g / 100) * refValue(k, f)) : null
+  }
 
   const updateUnit = (key, field, value) => setUnits((us) => us.map((u) => (u.key === key ? { ...u, [field]: value } : u)))
 
@@ -149,17 +153,21 @@ export default function FoodForm({ food, initialName = '', onClose }) {
                 aria-label="Bezeichnung"
                 className={`${inputClass(shown.units?.[u.key])} min-w-0 flex-1`}
               />
-              <div className="relative w-28 shrink-0">
+              <div className="relative w-24 shrink-0">
                 <input
                   inputMode="decimal"
                   value={u.grams}
                   onChange={(e) => updateUnit(u.key, 'grams', e.target.value)}
-                  placeholder="Gramm"
+                  placeholder="0"
                   aria-label="Gramm"
                   className={`${inputClass(shown.units?.[u.key])} pr-8`}
                 />
                 <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted">g</span>
               </div>
+              {/* Exact points for one of this size, one decimal, not rounded to 0.5 (display only). */}
+              <span className="w-10 shrink-0 text-right text-sm font-semibold text-primary tabular-nums" aria-label="Punkte">
+                {unitPoints(u.grams) ?? '–'}
+              </span>
               <button
                 type="button"
                 onClick={() => setUnits((us) => us.filter((x) => x.key !== u.key))}

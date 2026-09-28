@@ -211,7 +211,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 ### 4.3 Datenbank — mockup `datenbank.pdf`
 - Segmented control: Lebensmittel / Sport / Tracker. Floating "+" button adds a new item of the active type.
 - **Lebensmittel list:** search field (same matching as §4.2), grouped by first letter (Ä/Ö/Ü sort with A/O/U), each row: name, subtitle = remark if present else "{category} · {n} Größen", reference value right-aligned. Tap → edit form.
-- **Food form:** Name*, Kategorie* (dropdown of existing categories, alphabetical, plus "+ Neue Kategorie …" which switches to a text field; a typed name matching an existing category ignoring case uses the existing spelling), Bemerkung, kcal pro 100 g*, Fett pro 100 g*, units list (add / rename / change grams / delete; "100 g" row locked). Validation: required fields, numbers ≥ 0, unit grams > 0, unit labels unique within the food, food name unique. Buttons: Speichern, Löschen (edit only).
+- **Food form:** Name*, Kategorie* (dropdown of existing categories, alphabetical, plus "+ Neue Kategorie …" which switches to a text field; a typed name matching an existing category ignoring case uses the existing spelling), Bemerkung, kcal pro 100 g*, Fett pro 100 g*, units list (add / rename / change grams / delete; "100 g" row locked; each additional size shows its exact points for one piece, one decimal, not rounded to 0.5 — display only). Validation: required fields, numbers ≥ 0, unit grams > 0, unit labels unique within the food, food name unique. Buttons: Speichern, Löschen (edit only).
 - **Sport list/form:** name*, Punkte pro 30 Min* (> 0, 0.5 steps).
 - **Tracker list/form:** name*, Einheit*, Tagesziel*, Schritt (default 1), icon (picker from §7.3), color (picker from §7.3), order (via up/down arrows in the list).
 - Deleting a food or sport never affects past logs (snapshots, §2).
@@ -314,6 +314,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Small build number visible on screen, increasing with every deploy. *(2026-09-28)*
 - Recipes: a food of type "recipe" built from ingredients, values derived live from current ingredient foods, "Ergibt … Portionen" field; built as Phase 3b before Gewicht. *(2026-09-28)*
 - Gewicht shows points too: a separate stacked-bar chart on the same time axis instead of a second y-axis (Claude pushed back on dual axes; Markus agreed). Weekly bars for ranges longer than one month. *(2026-09-28)*
+- Food form shows exact (unrounded, one decimal) points next to each additional size. *(2026-09-28)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1
