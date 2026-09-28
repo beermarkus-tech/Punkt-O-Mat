@@ -7,6 +7,7 @@ import Chip from '../../components/Chip'
 import { formatPoints } from '../../lib/format'
 import { displayRef, foodPoints } from '../../lib/points'
 import { isRecipe } from '../../lib/recipes'
+import RecipeTag from '../../components/RecipeTag'
 import { byName, matches } from '../../lib/text'
 
 /** Search + category chips + result list. The parent owns the query so it can clear it after adding. */
@@ -52,7 +53,10 @@ export default function FoodPicker({ query, onQuery, onPick, onCreate }) {
           className="flex items-center gap-3 rounded-card border border-border bg-card px-5 py-3.5 text-left active:border-primary"
         >
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-[17px] font-semibold">{f.name}</span>
+            <span className="flex items-center gap-2">
+              <span className="truncate text-[17px] font-semibold">{f.name}</span>
+              {isRecipe(f) && <RecipeTag />}
+            </span>
             <span className="block truncate text-sm text-muted">
               {f.category} ·{' '}
               {isRecipe(f)

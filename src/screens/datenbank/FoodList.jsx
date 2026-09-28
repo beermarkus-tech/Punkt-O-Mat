@@ -5,6 +5,7 @@ import Spinner from '../../components/Spinner'
 import { formatPoints } from '../../lib/format'
 import { displayRef, foodPoints } from '../../lib/points'
 import { isRecipe } from '../../lib/recipes'
+import RecipeTag from '../../components/RecipeTag'
 import { byName, letterOf, matches } from '../../lib/text'
 
 function subtitle(food) {
@@ -50,9 +51,7 @@ export default function FoodList({ onOpen }) {
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-2">
                   <span className="truncate text-[17px] font-semibold">{f.name}</span>
-                  {isRecipe(f) && (
-                    <span className="shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">Rezept</span>
-                  )}
+                  {isRecipe(f) && <RecipeTag />}
                 </span>
                 <span className="block truncate text-sm text-muted">{subtitle(f)}</span>
               </span>
