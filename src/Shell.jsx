@@ -4,6 +4,8 @@ import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
 import { DataProvider } from './DataContext'
 import Datenbank from './screens/Datenbank'
+import Hinzufuegen from './screens/Hinzufuegen'
+import { todayId } from './lib/dates'
 import BuildTag from './components/BuildTag'
 
 // Five-tab bottom navigation, spec.md §3 / §7.3. Tabs are React state, no router.
@@ -17,6 +19,8 @@ const TABS = [
 
 export default function Shell({ user }) {
   const [tab, setTab] = useState('heute')
+  // The selected day (spec.md §3). Heute's date navigation arrives in Phase 3.
+  const [date] = useState(todayId)
   const current = TABS.find((t) => t.id === tab)
 
   return (
@@ -26,6 +30,8 @@ export default function Shell({ user }) {
         <BuildTag className="absolute top-1.5 right-4" />
         {tab === 'datenbank' ? (
           <Datenbank />
+        ) : tab === 'hinzufuegen' ? (
+          <Hinzufuegen date={date} />
         ) : (
           <>
             <h1 className="text-3xl font-extrabold">{current.label}</h1>

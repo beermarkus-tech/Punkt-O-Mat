@@ -10,3 +10,13 @@ export function refValue(kcal_100, fat_100) {
 export function displayRef(kcal_100, fat_100) {
   return roundHalf(refValue(kcal_100, fat_100))
 }
+
+/** Points for a logged food entry: rounded once, after multiplying by quantity (spec.md §1.1). */
+export function foodPoints({ qty, unitGrams, kcal_100, fat_100 }) {
+  return roundHalf(qty * (unitGrams / 100) * refValue(kcal_100, fat_100))
+}
+
+/** Points earned by a sport session (spec.md §1.3). Positive. */
+export function sportPoints({ minutes, pointsPer30Min }) {
+  return roundHalf((minutes / 30) * pointsPer30Min)
+}
