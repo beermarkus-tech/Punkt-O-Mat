@@ -44,3 +44,35 @@ export const SECTIONS = [
   { id: 'abends', label: 'Abends' },
   { id: 'zwischendurch', label: 'Zwischendurch' },
 ]
+
+function toUTC(id) {
+  const [y, m, d] = id.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d))
+}
+
+function fromUTC(date) {
+  return date.toISOString().slice(0, 10) // safe here: the Date is a pure UTC calendar date, not a moment in time
+}
+
+/** Day ID n days after `id` (negative = before). */
+export function addDays(id, n) {
+  const d = toUTC(id)
+  d.setUTCDate(d.getUTCDate() + n)
+  return fromUTC(d)
+}
+
+/** The seven day IDs Monday..Sunday of the week containing `id` (weeks start Monday, spec.md §1.4). */
+export function weekDates(id) {
+  const monday = addDays(id, -((toUTC(id).getUTCDay() + 6) % 7))
+  return Array.from({ length: 7 }, (_, i) => addDays(monday, i))
+}
+
+const WEEKDAYS_LONG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
+
+/** Header label: HEUTE / GESTERN / MORGEN, otherwise the weekday (spec.md §1.5). */
+export function relativeDayLabel(id, today = todayId()) {
+  if (id === today) return 'Heute'
+  if (id === addDays(today, -1)) return 'Gestern'
+  if (id === addDays(today, 1)) return 'Morgen'
+  return WEEKDAYS_LONG[toUTC(id).getUTCDay()]
+}

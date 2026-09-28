@@ -5,12 +5,11 @@ import { useToast } from '../components/ToastContext'
 import SegmentedControl from '../components/SegmentedControl'
 import { persist } from '../data'
 import { formatDateLabel, suggestSection, todayId } from '../lib/dates'
-import { addToLog, removeFromLog } from '../lib/log'
+import { addToLog } from '../lib/log'
 import FoodPicker from './hinzufuegen/FoodPicker'
 import FoodSheet from './hinzufuegen/FoodSheet'
 import SportPicker from './hinzufuegen/SportPicker'
 import SportSheet from './hinzufuegen/SportSheet'
-import DayEntries from './hinzufuegen/DayEntries'
 import FoodForm from './datenbank/FoodForm'
 
 const MODES = [
@@ -57,8 +56,6 @@ export default function Hinzufuegen({ date }) {
       ) : (
         <SportPicker onPick={setSport} />
       )}
-
-      <DayEntries log={log} onRemove={({ field, id }) => persist(removeFromLog({ date, log, field, id }), toast)} />
 
       {food && (
         <FoodSheet

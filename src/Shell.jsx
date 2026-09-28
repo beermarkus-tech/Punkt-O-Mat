@@ -5,6 +5,7 @@ import { auth } from './firebase'
 import { DataProvider } from './DataContext'
 import Datenbank from './screens/Datenbank'
 import Hinzufuegen from './screens/Hinzufuegen'
+import Heute from './screens/Heute'
 import { todayId } from './lib/dates'
 import BuildTag from './components/BuildTag'
 
@@ -19,8 +20,8 @@ const TABS = [
 
 export default function Shell({ user }) {
   const [tab, setTab] = useState('heute')
-  // The selected day (spec.md §3). Heute's date navigation arrives in Phase 3.
-  const [date] = useState(todayId)
+  // The selected day (spec.md §3): shown by Heute, written to by Hinzufügen; resets to today on app start.
+  const [date, setDate] = useState(todayId)
   const current = TABS.find((t) => t.id === tab)
 
   return (
@@ -28,7 +29,9 @@ export default function Shell({ user }) {
     <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col">
       <main className="relative flex-1 px-4 pt-6 pb-28">
         <BuildTag className="absolute top-1.5 right-4" />
-        {tab === 'datenbank' ? (
+        {tab === 'heute' ? (
+          <Heute date={date} onDateChange={setDate} />
+        ) : tab === 'datenbank' ? (
           <Datenbank />
         ) : tab === 'hinzufuegen' ? (
           <Hinzufuegen date={date} />

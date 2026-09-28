@@ -2,16 +2,29 @@ import { arrayUnion, doc, setDoc, Timestamp, updateDoc } from 'firebase/firestor
 import { db } from '../firebase'
 
 /**
- * Append a food entry (field "entries") or sport session (field "sport") to dailyLogs/{date}.
- * `log` is the current day doc: null = doesn't exist yet, so the settings snapshot is copied in (spec.md §2).
+ * Merge `data` into dailyLogs/{date}. `log` is the current day doc: null = doesn't exist yet,
+ * so the settings snapshot is copied in on this first write (spec.md §2).
  */
-export function addToLog({ date, log, settings, field, item }) {
-  const data = { [field]: arrayUnion({ ...item, id: crypto.randomUUID(), loggedAt: Timestamp.now() }) }
+export function updateLog({ date, log, settings, data }) {
+  const full = { ...data }
   if (log === null) {
-    data.dailyAllowance = settings?.dailyAllowance ?? 30
-    data.weeklyBonus = settings?.weeklyBonus ?? 20
+    full.dailyAllowance = settings?.dailyAllowance ?? 30
+    full.weeklyBonus = settings?.weeklyBonus ?? 20
   }
-  return setDoc(doc(db, 'dailyLogs', date), data, { merge: true })
+  return setDoc(doc(db, 'dailyLogs', date), full, { merge: true })
+}
+
+/** Append a food entry (field "entries") or sport session (field "sport"). */
+export function addToLog({ date, log, settings, field, item }) {
+  const entry = { ...item, id: crypto.randomUUID(), loggedAt: Timestamp.now() }
+  return updateLog({ date, log, settings, data: { [field]: arrayUnion(entry) } })
+}
+
+/** Replace one entry (matched by id) in an existing day doc. */
+export function replaceInLog({ date, log, field, item }) {
+  return updateDoc(doc(db, 'dailyLogs', date), {
+    [field]: (log?.[field] ?? []).map((e) => (e.id === item.id ? item : e)),
+  })
 }
 
 export function removeFromLog({ date, log, field, id }) {

@@ -50,3 +50,20 @@ Append-only. One entry per work session, newest at the bottom. Never edit or del
 - Phase 6 Excel structure and the §4.1/§4.2 defaults from the previous entry remain open.
 
 **Next session should:** get Markus's confirmation of the remaining Phase 0 checks (other account → Kein Zugriff; add to home screen shows the apple icon), then start Phase 1 (Datenbank).
+
+## 2026-09-28 — Phases 1–3: Datenbank, Hinzufügen, Heute
+
+**What was built or changed:**
+- Phase 1 (Datenbank): foods/sports/trackers CRUD with validation, search, letter grouping, tracker ordering and icon/colour pickers. Confirmed working by Markus on his phone.
+- Markus's decisions during Phase 1 (recorded in spec.md §8): reference value in lists shown rounded to 0.5 (display only); Kategorie picked from a dropdown of existing categories or created on the fly; a small "Build {n}" label on screen = GitHub Actions run number, and Claude tells Markus the build number after every push (CLAUDE.md).
+- Phase 2 (Hinzufügen): food search with category chips, bottom sheet (unit chips + free grams, 0.5-step quantity, Rubrik by time of day, live points), "neu anlegen" shortcut, sport mode; writes to `dailyLogs/{Paris date}` with snapshots and the per-day settings snapshot. Confirmed by Markus (Build 6). Rubrik chips are a 2×2 grid instead of the mockup's single row (didn't fit on a phone).
+- Phase 3 (Heute): summary card with live weekly-bonus overflow (`src/lib/week.js`), five collapsible sections, entry edit/delete via the Hinzufügen sheets (points from the entry's own snapshot), tracker cards (+/−, segmented or continuous bar), weight input, date navigation (arrows, native date picker, "Heute" chip). Selected date is shared with Hinzufügen. The temporary "Einträge des Tages" list on Hinzufügen was removed as planned (Markus was unsure it's needed anyway).
+- Unit tests (Vitest, 36): roundHalf, food/sport points incl. the spec's Brezel example, Paris dates around midnight/DST, time-of-day ranges, labels, and the weekly overflow walk (pool runs out, earlier-day edit re-flows, per-day snapshots).
+
+**State:** Phase 3 pushed but not yet confirmed by Markus on his phone.
+
+**Open items (non-blocking, awaiting Markus):**
+- Whether Hinzufügen should show a short "just added" list after all (he said "to be decided later").
+- Carried over: old branch deletion, `(default)` database rules of the other apps, Phase 6 Excel structure, §4.1/§4.2 defaults.
+
+**Next session should:** get Markus's confirmation of Heute (Phase 3), then Phase 4 (Gewicht).
