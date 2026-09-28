@@ -76,7 +76,7 @@ for each day Monday..Sunday (in order):
 
 ## 2. Data model (Firestore)
 
-All collections are top-level. There is exactly one user. Every document ID that is a date uses the **local date in Europe/Paris**, format `yyyy-mm-dd`. **Never derive a date from `toISOString()`** (that is UTC and produces the wrong day around midnight).
+All data lives in the **named Firestore database `punkt-o-mat`** (region `eur3`) inside the shared Firebase project `exercise-tracker`, which also hosts other, unrelated apps with their own databases. The app must connect to this database by name (`getFirestore(app, 'punkt-o-mat')` / `initializeFirestore(app, settings, 'punkt-o-mat')`), never to `(default)`. All collections are top-level. There is exactly one user. Every document ID that is a date uses the **local date in Europe/Paris**, format `yyyy-mm-dd`. **Never derive a date from `toISOString()`** (that is UTC and produces the wrong day around midnight).
 
 ```
 foods/{foodId}                       // auto ID
@@ -228,7 +228,8 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - Firebase JS SDK v10+: Auth (Google provider, `signInWithPopup`), Firestore with `persistentLocalCache`. **Firebase Hosting is not used.**
 - **Hosting:** GitHub Pages, deployed by a GitHub Actions workflow on every push to `main` (build → upload `dist` → deploy). Repo: `Punkt-O-Mat`. Vite `base` must be `'/Punkt-O-Mat/'` (case-sensitive, matches the repo name). PWA manifest `start_url` and `scope` must use the same base.
 - **Firebase config** (apiKey, projectId …) is committed in `src/firebase.js`. These values are public identifiers, not secrets; security comes from the Firestore rules (§6).
-- **Firebase console setup:** Firestore database (region `eur3` or `europe-west`), Google sign-in provider enabled, `{github-username}.github.io` added to Auth → Settings → Authorized domains.
+- **Firebase project:** the shared project `exercise-tracker` (not a dedicated one). Punkt-o-Mat gets its own registered web app and its own Firestore database `punkt-o-mat` (`eur3`). Auth (Google provider, authorized domains, user list) is **shared** with the other apps in the project: check it, but never change a shared setting in a way that affects them.
+- **Firebase console setup:** database `punkt-o-mat` exists (done); Google sign-in provider enabled and `beermarkus-tech.github.io` in Auth → Settings → Authorized domains (likely already true, since the other apps use the same setup — verify).
 - Built with Claude Code from an Android tablet; Markus is not a programmer (see CLAUDE.md).
 
 ## 6. Security
@@ -248,7 +249,7 @@ service cloud.firestore {
 }
 ```
 
-The same email is a constant in the app (`ALLOWED_EMAIL`) to show the "Kein Zugriff" screen (§4.0). Rules are pasted into the Firebase console (Firestore → Rules) — no Firebase CLI needed. Allowed email (confirmed by Markus): `beer.markus@gmail.com`.
+The same email is a constant in the app (`ALLOWED_EMAIL`) to show the "Kein Zugriff" screen (§4.0). Rules are pasted into the Firebase console (Firestore → select database `punkt-o-mat` → Rules) — no Firebase CLI needed. Rules are per database, so these never affect the other apps' databases in the shared project. Allowed email (confirmed by Markus): `beer.markus@gmail.com`.
 
 ## 7. Visual design
 
@@ -287,6 +288,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Settings changes apply to today and future days only (per-day snapshot). *(2026-09-28)*
 - Aktivität is not a food Rubrik; sport entries go there automatically. *(2026-09-28)*
 - Allowed Google account: beer.markus@gmail.com. *(2026-09-28)*
+- Firebase: shared project `exercise-tracker`, own named database `punkt-o-mat` (eur3); Auth is shared with Markus's other GitHub Pages apps. *(2026-09-28)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

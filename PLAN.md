@@ -3,13 +3,13 @@
 Staged phases, each with a concrete deliverable Markus can test on his phone. Revised only when the plan itself changes (a phase reordered, split, or rescoped) — not appended to every session. Section references (§) point to spec.md.
 
 ## Phase 0 — Infrastructure
-**Already done by Markus (2026-09-28):** GitHub repo `Punkt-O-Mat` created; GitHub Pages source set to "GitHub Actions"; Firebase project `punkt-o-mat` created. Verify each of these before relying on it.
+**Already done by Markus (2026-09-28):** GitHub repo `Punkt-O-Mat` created; GitHub Pages source set to "GitHub Actions"; Firestore database `punkt-o-mat` (eur3) created inside the shared Firebase project `exercise-tracker`. Verify each of these before relying on it.
 
 **Deliverable:** the live GitHub Pages URL shows the Anmeldung screen. Markus can sign in with his Google account and sees an empty app shell with the 5-tab bottom nav. Any other Google account sees "Kein Zugriff". The app can be installed to the home screen.
 - Collect from Markus: GitHub username, Google email, Firebase web-app config (walk him through registering a web app in the Firebase console)
 - Scaffold React + Vite + Tailwind; `base: '/Punkt-O-Mat/'` (§5)
 - GitHub Actions workflow: push to `main` → build → deploy to Pages
-- Firebase: confirm Firestore exists (EU region), enable Google provider, add `{username}.github.io` to authorized domains (§5)
+- Firebase (shared project, §5): register a Punkt-o-Mat web app; verify Google provider and `beermarkus-tech.github.io` authorized domain (probably already set by the other apps); app connects to named database `punkt-o-mat`
 - Firestore rules from §6 pasted in the console; `ALLOWED_EMAIL` constant in the app
 - App icon: design options, Markus picks one; export as PWA icons (incl. maskable) and favicon
 - Firestore offline persistence; PWA manifest + icons (§5)
