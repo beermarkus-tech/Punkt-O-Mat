@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { House, Plus, AlignJustify, Activity, Settings } from 'lucide-react'
-import { signOut } from 'firebase/auth'
-import { auth } from './firebase'
 import { DataProvider } from './DataContext'
 import Datenbank from './screens/Datenbank'
 import Hinzufuegen from './screens/Hinzufuegen'
 import Heute from './screens/Heute'
 import Gewicht from './screens/Gewicht'
+import Einstellungen from './screens/Einstellungen'
 import { todayId } from './lib/dates'
 import BuildTag from './components/BuildTag'
 
@@ -32,6 +31,8 @@ export default function Shell({ user }) {
         <BuildTag className="absolute top-1.5 right-4" />
         {tab === 'heute' ? (
           <Heute date={date} onDateChange={setDate} />
+        ) : tab === 'einstellungen' ? (
+          <Einstellungen user={user} />
         ) : tab === 'gewicht' ? (
           <Gewicht />
         ) : tab === 'datenbank' ? (
@@ -42,19 +43,6 @@ export default function Shell({ user }) {
           <>
             <h1 className="text-3xl font-extrabold">{current.label}</h1>
             {/* Placeholder until the screen is built in its PLAN.md phase. */}
-            {tab === 'einstellungen' && (
-              <div className="mt-6 flex flex-col gap-4">
-                <p className="text-muted">
-                  {user.displayName} · {user.email}
-                </p>
-                <button
-                  onClick={() => signOut(auth)}
-                  className="rounded-chip border border-border bg-card px-6 py-4 font-semibold text-accent active:opacity-80"
-                >
-                  Abmelden
-                </button>
-              </div>
-            )}
           </>
         )}
       </main>

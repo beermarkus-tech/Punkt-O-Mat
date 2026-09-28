@@ -67,3 +67,21 @@ Append-only. One entry per work session, newest at the bottom. Never edit or del
 - Carried over: old branch deletion, `(default)` database rules of the other apps, Phase 6 Excel structure, §4.1/§4.2 defaults.
 
 **Next session should:** get Markus's confirmation of Heute (Phase 3), then Phase 4 (Gewicht).
+
+## 2026-09-28 — Phases 3b, 4, 5: Rezepte, Gewicht (+ points chart), Einstellungen
+
+**What was built or changed:**
+- Phase 3 (Heute) confirmed by Markus on his phone.
+- Phase 3b (new, Markus's request): recipes as foods of type "recipe" with ingredients and servings; kcal/fat/Portion derived live from current ingredient foods (§4.6). "Rezept" label in Datenbank and Hinzufügen. Confirmed working.
+- Phase 4 (Gewicht): weight line chart with range toggle and stats. Markus asked for points on a second y-axis; Claude pushed back (dual axes mislead) and Markus agreed to a separate stacked points chart on the same time axis (within budget / from weekly bonus / over), daily for ≤ 1 month, weekly for 3 Monate / Alles (§4.4).
+- Food form: exact (unrounded, one decimal) points next to every size incl. the locked 100 g row.
+- Phase 5 (Einstellungen): Tägliche Punkte / Wochenbonus (1–100, written to settings/config and to today's log if it exists), account with Google photo or initials, version (package.json) + build, Abmelden.
+- Build 9 failed on GitHub because a new file was left out of the commit (fixed in Build 10). Lesson: always `git add -A` and check `git status` before pushing.
+
+**State:** Phases 0–3b confirmed by Markus. Phase 4 (incl. points chart) and Phase 5 pushed, not yet confirmed on his phone. 57 unit tests.
+
+**Open items (non-blocking, awaiting Markus):**
+- "Just added" list on Hinzufügen — still undecided.
+- Old branch deletion; `(default)` database rules of the other apps; Phase 6 Excel structure; §4.1/§4.2 defaults.
+
+**Next session should:** get confirmation of Gewicht and Einstellungen, then ask Markus whether to do Phase 6 (needs his Excel file) or Phase 7 polish.
