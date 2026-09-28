@@ -3,14 +3,14 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth, isAllowed } from './firebase'
 import { seedIfNeeded } from './seed'
 import Spinner from './components/Spinner'
-import Toast from './components/Toast'
+import { ToastProvider, useToast } from './components/ToastContext'
 import Anmeldung from './screens/Anmeldung'
 import KeinZugriff from './screens/KeinZugriff'
 import Shell from './Shell'
 
-export default function App() {
+function Root() {
   const [user, setUser] = useState(undefined) // undefined = still loading
-  const [toast, setToast] = useState(null)
+  const toast = useToast()
 
   useEffect(() => onAuthStateChanged(auth, setUser), [])
 
@@ -18,20 +18,20 @@ export default function App() {
     if (!isAllowed(user)) return
     seedIfNeeded().catch((err) => {
       console.error(err)
-      setToast('Speichern fehlgeschlagen')
+      toast('Speichern fehlgeschlagen')
     })
-  }, [user])
+  }, [user, toast])
 
-  let content
-  if (user === undefined) content = <Spinner />
-  else if (!user) content = <Anmeldung />
-  else if (!isAllowed(user)) content = <KeinZugriff user={user} />
-  else content = <Shell user={user} />
+  if (user === undefined) return <Spinner />
+  if (!user) return <Anmeldung />
+  if (!isAllowed(user)) return <KeinZugriff user={user} />
+  return <Shell user={user} />
+}
 
+export default function App() {
   return (
-    <>
-      {content}
-      <Toast message={toast} onDone={() => setToast(null)} />
-    </>
+    <ToastProvider>
+      <Root />
+    </ToastProvider>
   )
 }

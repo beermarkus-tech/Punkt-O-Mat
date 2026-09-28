@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { House, Plus, AlignJustify, Activity, Settings } from 'lucide-react'
 import { signOut } from 'firebase/auth'
 import { auth } from './firebase'
+import { DataProvider } from './DataContext'
+import Datenbank from './screens/Datenbank'
 
 // Five-tab bottom navigation, spec.md §3 / §7.3. Tabs are React state, no router.
 const TABS = [
@@ -17,21 +19,30 @@ export default function Shell({ user }) {
   const current = TABS.find((t) => t.id === tab)
 
   return (
+    <DataProvider>
     <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col">
       <main className="flex-1 px-4 pt-6 pb-28">
-        <h1 className="text-2xl font-bold">{current.label}</h1>
-        {/* Placeholder until the screen is built in its PLAN.md phase. */}
-        {tab === 'einstellungen' ? (
-          <div className="mt-6 flex flex-col gap-4">
-            <p className="text-muted">{user.displayName} · {user.email}</p>
-            <button
-              onClick={() => signOut(auth)}
-              className="rounded-chip border border-border bg-card px-6 py-4 font-semibold text-accent active:opacity-80"
-            >
-              Abmelden
-            </button>
-          </div>
-        ) : null}
+        {tab === 'datenbank' ? (
+          <Datenbank />
+        ) : (
+          <>
+            <h1 className="text-3xl font-extrabold">{current.label}</h1>
+            {/* Placeholder until the screen is built in its PLAN.md phase. */}
+            {tab === 'einstellungen' && (
+              <div className="mt-6 flex flex-col gap-4">
+                <p className="text-muted">
+                  {user.displayName} · {user.email}
+                </p>
+                <button
+                  onClick={() => signOut(auth)}
+                  className="rounded-chip border border-border bg-card px-6 py-4 font-semibold text-accent active:opacity-80"
+                >
+                  Abmelden
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </main>
 
       <nav className="fixed inset-x-0 bottom-0 border-t border-border bg-card pb-[env(safe-area-inset-bottom)]">
@@ -54,5 +65,6 @@ export default function Shell({ user }) {
         </ul>
       </nav>
     </div>
+    </DataProvider>
   )
 }
