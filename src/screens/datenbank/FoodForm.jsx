@@ -9,8 +9,8 @@ import Sheet from '../../components/Sheet'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import CategoryPicker from './CategoryPicker'
 import { deleteButtonClass, Field, inputClass, numberError, primaryButtonClass } from '../../components/form'
-import { formatPoints, formatRef, parseNumber, toInput } from '../../lib/format'
-import { displayRef, refValue } from '../../lib/points'
+import { formatRef, parseNumber, toInput } from '../../lib/format'
+import { refValue } from '../../lib/points'
 
 // First unit of every food: fixed, never editable or deletable (spec.md §2).
 const DEFAULT_UNIT = { label: '100 g', grams: 100 }
@@ -67,7 +67,6 @@ export default function FoodForm({ food, initialName = '', onClose }) {
 
   const k = parseNumber(kcal)
   const f = parseNumber(fat)
-  const preview = k >= 0 && f >= 0 ? formatPoints(displayRef(k, f)) : null
   const unitPoints = (gramsText) => {
     const g = parseNumber(gramsText)
     return k >= 0 && f >= 0 && g > 0 ? formatRef((g / 100) * refValue(k, f)) : null
@@ -131,17 +130,17 @@ export default function FoodForm({ food, initialName = '', onClose }) {
           <input inputMode="decimal" value={fat} onChange={(e) => setFat(e.target.value)} className={inputClass(shown.fat)} />
         </Field>
       </div>
-      {preview && (
-        <p className="-mt-2 text-sm text-muted">
-          = <span className="font-semibold text-primary">{preview}</span> Pkt / 100 g
-        </p>
-      )}
-
       <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold text-muted">Größen</span>
-        <div className="flex items-center gap-2 rounded-chip border border-border bg-primary-soft px-4 py-3">
-          <span className="flex-1">{DEFAULT_UNIT.label}</span>
-          <Lock size={16} className="text-muted" aria-label="fest" />
+        {/* Same columns as the rows below: size · points · (lock instead of the bin). */}
+        <div className="flex items-center gap-2">
+          <span className="flex-1 rounded-chip border border-border bg-primary-soft px-4 py-3">{DEFAULT_UNIT.label}</span>
+          <span className="w-10 shrink-0 text-right text-sm font-semibold text-primary tabular-nums" aria-label="Punkte">
+            {unitPoints(String(DEFAULT_UNIT.grams)) ?? '–'}
+          </span>
+          <span className="flex w-9 shrink-0 justify-center text-muted">
+            <Lock size={16} aria-label="fest" />
+          </span>
         </div>
         {units.map((u) => (
           <div key={u.key} className="flex flex-col gap-1">
