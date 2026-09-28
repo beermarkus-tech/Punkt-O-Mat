@@ -32,3 +32,21 @@ Append-only. One entry per work session, newest at the bottom. Never edit or del
 - Time-of-day ranges (spec §4.2) and tracker "−" button (§4.1) are sensible defaults — Markus may want to adjust once he uses the app.
 
 **Next session should:** start Phase 0 by collecting Markus's GitHub username and Google email, then verify (not redo) the repo, Pages and Firebase project, and walk him through the remaining console steps one at a time.
+
+## 2026-09-28 — Phase 0: app live on GitHub Pages, sign-in and database working
+
+**What was built or changed (PLAN.md Phase 0):**
+- Repo populated on `main` (docs, mockups in `docs/mockups/`). Work happens on `main` only (Markus's decision); GitHub default branch switched to `main`.
+- App icon chosen (option 07, apple) and exported to `public/` (favicon.svg, 192/512 PNG, maskable 512, apple-touch-icon). PLAN.md Phase 0 gained an icon item.
+- Firebase turned out to be a **shared** project `exercise-tracker` (id `exercise-tracker-26120`) that also serves Markus's other PWAs. Punkt-o-Mat uses its own named Firestore database `punkt-o-mat` (eur3) and its own registered web app. spec.md §2/§5/§6 and CLAUDE.md updated accordingly.
+- Scaffold: React 19 + Vite 8 + Tailwind 4 (tokens in `src/index.css` `@theme`), Firebase 12 with persistent local cache, Anmeldung / Kein Zugriff screens, 5-tab shell with empty screens (Einstellungen has a temporary sign-out), first-launch seeding (`src/seed.js`), vite-plugin-pwa manifest, GitHub Actions deploy to Pages.
+- Firestore rules from spec §6 published on the `punkt-o-mat` database. First attempt failed with "Speichern fehlgeschlagen" until the rules were published correctly; confirmed working by Markus afterwards.
+
+**State:** live at https://beermarkus-tech.github.io/Punkt-O-Mat/. Markus signed in on his phone successfully and seeding no longer fails. Not yet confirmed: "Kein Zugriff" with another Google account, install to home screen. No feature screens yet.
+
+**Open items (non-blocking, awaiting Markus):**
+- The old branch `claude/upload-mockups-repo-fq1kc4` could not be deleted from the session (push-delete not accepted); Markus can delete it in the GitHub UI.
+- Outside this project: an unauthenticated REST read against the shared project's `(default)` database was not refused (returned 404 "not found" rather than 403), suggesting the other apps' rules allow public access. Told Markus; nothing changed there.
+- Phase 6 Excel structure and the §4.1/§4.2 defaults from the previous entry remain open.
+
+**Next session should:** get Markus's confirmation of the remaining Phase 0 checks (other account → Kein Zugriff; add to home screen shows the apple icon), then start Phase 1 (Datenbank).

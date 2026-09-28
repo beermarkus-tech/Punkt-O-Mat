@@ -18,8 +18,7 @@ export default function App() {
     if (!isAllowed(user)) return
     seedIfNeeded().catch((err) => {
       console.error(err)
-      // Temporary during Phase 0 setup: show the error code to help diagnose Firebase config issues.
-      setToast(`Speichern fehlgeschlagen (${err.code ?? err.message})`)
+      setToast('Speichern fehlgeschlagen')
     })
   }, [user])
 
