@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* Design tokens, spec.md §7.2 */
+@theme {
+  --color-primary: #2E6F4E;
+  --color-primary-soft: #E3EFE7;
+  --color-accent: #C2410C;
+  --color-bg: #F8F7F4;
+  --color-card: #FFFFFF;
+  --color-border: #E7E5E0;
+  --color-text: #1C1C1C;
+  --color-muted: #6B7280;
+  --color-tracker-blue: #2563EB;
+  --color-tracker-purple: #7C3AED;
+  --radius-card: 16px;
+  --radius-chip: 12px;
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
