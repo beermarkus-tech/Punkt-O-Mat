@@ -91,6 +91,14 @@ foods/{foodId}                       // auto ID
     { label: "Klein", grams: 70 }
   ]
   createdAt, updatedAt: timestamp
+  // Recipes only (§4.6) — a recipe is a food doc with type "recipe":
+  type: "recipe" | absent            // absent = plain food
+  servings: number                   // integer ≥ 1 ("Ergibt … Portionen")
+  ingredients: [                     // ≥ 1 item, plain foods only (no recipes inside recipes)
+    { foodId, foodName, kcal_100, fat_100,   // snapshot at recipe save time (fallback if the food is deleted)
+      unitLabel, unitGrams, qty }            // same shape as a log entry's amount; "g" = free grams
+  ]
+  // A recipe doc has NO own kcal_100 / fat_100 / units: they are derived live (§4.6).
 
 sports/{sportId}                     // auto ID
   name: string                       // required, unique
@@ -208,6 +216,16 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Tracker list/form:** name*, Einheit*, Tagesziel*, Schritt (default 1), icon (picker from §7.3), color (picker from §7.3), order (via up/down arrows in the list).
 - Deleting a food or sport never affects past logs (snapshots, §2).
 
+### 4.6 Rezepte (recipes)
+A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g Griechischer Joghurt + 10 g Agavensirup + 40 g Cornflakes). It lives in the Lebensmittel list and behaves like any food everywhere else (search, categories, Hinzufügen, Heute, edit sheet).
+
+- **Derived values, always live.** From the ingredients, using each ingredient's *current* food data (falling back to the ingredient's own snapshot if that food was deleted, and to its stored `unitGrams` if the unit no longer exists): total grams `G`, total kcal `K`, total fat `F`. The recipe then acts as a food with `kcal_100 = K / G × 100`, `fat_100 = F / G × 100` and two units: "100 g" and **"Portion"** = `G / servings` grams. Editing an ingredient food in Datenbank therefore changes the recipe immediately.
+- **Rounding once.** "1 Portion" = `roundHalf((F/9 + K/60) / servings)` — the exact ingredient values summed, rounded once (§1.1), never the sum of rounded ingredient points.
+- **Past entries never change.** Logging a recipe snapshots its derived `kcal_100` / `fat_100` and the Portion grams into the entry like any food (§2). Editing a logged entry on Heute keeps the entry's own `unitGrams` for its unit.
+- **Datenbank:** the "+" on Lebensmittel asks "Lebensmittel" or "Rezept". Recipe rows show a small "Rezept" label, subtitle = remark if present else "{category} · {ingredient names}", and the points per Portion on the right. Hinzufügen shows recipes as "{category} · {n} Pkt / Portion".
+- **Recipe form:** Name*, Kategorie* (same picker as foods), Bemerkung, Ergibt … Portionen (stepper, integer ≥ 1, default 1), Zutaten list ("+ Zutat hinzufügen" → search plain foods → same size/amount sheet as Hinzufügen without Rubrik, button "Übernehmen"; tap a row to change, bin to remove), total line "Gesamt {G} g · {points} Pkt." (plus "1 Portion = … Pkt." when servings > 1). Validation: name unique among all foods, category required, ≥ 1 ingredient. Buttons: Speichern, Löschen (edit only).
+- Deleting a food that a recipe uses keeps the recipe working from the ingredient snapshot.
+
 ### 4.4 Gewicht — mockup `gewicht.pdf`
 - **Stats row:** START / HEUTE / DELTA / MAX / MIN, all computed **over the selected range**: Start = earliest weight in range, Heute = most recent weight in range, Delta = Heute − Start (signed, "−4,0"), Max/Min over range. No data → "–".
 - **Chart:** line chart with dots (Recharts), x-axis = real time scale (gaps between measurements stay proportional), y-axis auto-scaled with ~1 kg padding, 4 horizontal gridlines, German date ticks "18.11.".
@@ -293,11 +311,11 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Reference value in lists is shown rounded to 0.5 (display only). *(2026-09-28)*
 - Kategorie is picked from existing categories or created on the fly. *(2026-09-28)*
 - Small build number visible on screen, increasing with every deploy. *(2026-09-28)*
+- Recipes: a food of type "recipe" built from ingredients, values derived live from current ingredient foods, "Ergibt … Portionen" field; built as Phase 3b before Gewicht. *(2026-09-28)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1
 
-- Recipe/composite items (beyond the free-text `remark`)
 - Multi-user / sharing
 - Export/import of the food catalog (CSV) — except the one-off migration in PLAN.md Phase 6
 - Barcode scanning, online nutrition databases

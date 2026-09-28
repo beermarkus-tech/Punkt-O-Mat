@@ -3,11 +3,13 @@ import { useData } from '../../DataContext'
 import SearchInput from '../../components/SearchInput'
 import Spinner from '../../components/Spinner'
 import { formatPoints } from '../../lib/format'
-import { displayRef } from '../../lib/points'
+import { displayRef, foodPoints } from '../../lib/points'
+import { isRecipe } from '../../lib/recipes'
 import { byName, letterOf, matches } from '../../lib/text'
 
 function subtitle(food) {
   if (food.remark) return food.remark
+  if (isRecipe(food)) return `${food.category} · ${food.ingredients.map((i) => i.foodName).join(', ')}`
   const n = food.units?.length ?? 1
   return `${food.category} · ${n} ${n === 1 ? 'Größe' : 'Größen'}`
 }
@@ -46,10 +48,19 @@ export default function FoodList({ onOpen }) {
               className="flex items-center gap-3 rounded-card border border-border bg-card px-5 py-3.5 text-left active:border-primary"
             >
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[17px] font-semibold">{f.name}</span>
+                <span className="flex items-center gap-2">
+                  <span className="truncate text-[17px] font-semibold">{f.name}</span>
+                  {isRecipe(f) && (
+                    <span className="shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">Rezept</span>
+                  )}
+                </span>
                 <span className="block truncate text-sm text-muted">{subtitle(f)}</span>
               </span>
-              <span className="text-lg font-bold text-primary">{formatPoints(displayRef(f.kcal_100, f.fat_100))}</span>
+              <span className="text-lg font-bold text-primary">
+                {isRecipe(f)
+                  ? formatPoints(foodPoints({ ...f, qty: 1, unitGrams: f.units[1].grams }))
+                  : formatPoints(displayRef(f.kcal_100, f.fat_100))}
+              </span>
             </button>
           ))}
         </section>

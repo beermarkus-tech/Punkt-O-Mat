@@ -1,7 +1,7 @@
 /** "Wirklich löschen?" confirmation, spec.md §3. */
 export default function ConfirmDialog({ onCancel, onConfirm }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[55] flex items-center justify-center bg-black/40 px-6" role="dialog" aria-modal="true">
       <div className="w-full max-w-sm rounded-card bg-card p-6 shadow-xl">
         <p className="text-lg font-semibold">Wirklich löschen?</p>
         <div className="mt-6 flex gap-3">

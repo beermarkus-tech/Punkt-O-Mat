@@ -1,7 +1,7 @@
 /** Panel sliding up from the bottom over a dimmed screen; tap outside to close. */
 export default function BottomSheet({ onClose, children, label }) {
   return (
-    <div className="fixed inset-0 z-40 flex items-end bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-end bg-black/40" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"

@@ -21,7 +21,10 @@ import SportSheet from './hinzufuegen/SportSheet'
 
 /** Units to offer when editing an entry: the food's current units, plus the logged unit if it no longer exists. */
 function unitsForEntry(entry, food) {
-  const units = food?.units?.length ? [...food.units] : [{ label: '100 g', grams: 100 }]
+  // The logged unit keeps its logged grams, so editing never silently changes the snapshot (spec.md §4.6).
+  const units = (food?.units?.length ? food.units : [{ label: '100 g', grams: 100 }]).map((u) =>
+    u.label === entry.unitLabel ? { ...u, grams: entry.unitGrams } : u,
+  )
   if (entry.unitLabel !== 'g' && !units.some((u) => u.label === entry.unitLabel)) {
     units.push({ label: entry.unitLabel, grams: entry.unitGrams })
   }

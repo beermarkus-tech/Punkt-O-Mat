@@ -5,7 +5,8 @@ import SearchInput from '../../components/SearchInput'
 import Spinner from '../../components/Spinner'
 import Chip from '../../components/Chip'
 import { formatPoints } from '../../lib/format'
-import { displayRef } from '../../lib/points'
+import { displayRef, foodPoints } from '../../lib/points'
+import { isRecipe } from '../../lib/recipes'
 import { byName, matches } from '../../lib/text'
 
 /** Search + category chips + result list. The parent owns the query so it can clear it after adding. */
@@ -53,7 +54,10 @@ export default function FoodPicker({ query, onQuery, onPick, onCreate }) {
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[17px] font-semibold">{f.name}</span>
             <span className="block truncate text-sm text-muted">
-              {f.category} · {formatPoints(displayRef(f.kcal_100, f.fat_100))} Pkt / 100 g
+              {f.category} ·{' '}
+              {isRecipe(f)
+                ? `${formatPoints(foodPoints({ ...f, qty: 1, unitGrams: f.units[1].grams }))} Pkt / Portion`
+                : `${formatPoints(displayRef(f.kcal_100, f.fat_100))} Pkt / 100 g`}
             </span>
           </span>
           <ChevronRight size={20} className="shrink-0 text-muted" />

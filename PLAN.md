@@ -37,6 +37,12 @@ Staged phases, each with a concrete deliverable Markus can test on his phone. Re
 - Tracker +/− and weight input
 - Date navigator + "Zu Datum" picker + "Heute" chip
 
+## Phase 3b — Rezepte (added 2026-09-28)
+**Deliverable:** Markus creates "Frühstücksmüsli" from existing foods in Datenbank, logs "1 Portion" in Hinzufügen with the expected points, edits the recipe afterwards, and the already-logged entry stays unchanged. (§4.6)
+- Recipe derivation (`kcal_100`, `fat_100`, Portion unit) with unit tests incl. servings, live ingredient changes, deleted ingredients, rounding once
+- Recipe form with ingredient picker and amount sheet; "Lebensmittel / Rezept" choice on "+"
+- Recipes in Datenbank and Hinzufügen lists
+
 ## Phase 4 — Gewicht
 **Deliverable:** weight chart with 2W/1M/3M/Alles toggle and range-based stats; "Gewicht eintragen" writes today's weight. (§4.4)
 

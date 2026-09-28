@@ -16,7 +16,7 @@ const label = 'text-xs font-bold tracking-wider text-muted uppercase'
  * `food` needs name, category, kcal_100, fat_100, units. `initial`: { unitLabel, qty, section }.
  * onSubmit receives the entry fields (without id/loggedAt).
  */
-export default function FoodSheet({ food, initial, submitText, onSubmit, onClose, children }) {
+export default function FoodSheet({ food, initial, submitText, onSubmit, onClose, children, showSection = true }) {
   const units = food.units?.length ? food.units : [{ label: '100 g', grams: 100 }]
   const [unit, setUnit] = useState(() => {
     if (initial?.unitLabel) return initial.unitLabel
@@ -24,7 +24,7 @@ export default function FoodSheet({ food, initial, submitText, onSubmit, onClose
   })
   const [qty, setQty] = useState(initial?.unitLabel && initial.unitLabel !== GRAMS ? initial.qty : 1)
   const [grams, setGrams] = useState(initial?.unitLabel === GRAMS ? String(initial.qty) : '')
-  const [section, setSection] = useState(initial.section)
+  const [section, setSection] = useState(initial?.section)
 
   const isGrams = unit === GRAMS
   const gramValue = parseNumber(grams)
@@ -95,6 +95,7 @@ export default function FoodSheet({ food, initial, submitText, onSubmit, onClose
         )}
       </div>
 
+      {showSection && (
       <div className="mt-5">
         <h3 className={`${label} mb-2`}>Rubrik</h3>
         <div className="grid grid-cols-2 gap-2">
@@ -105,6 +106,7 @@ export default function FoodSheet({ food, initial, submitText, onSubmit, onClose
           ))}
         </div>
       </div>
+      )}
 
       <button
         type="button"
