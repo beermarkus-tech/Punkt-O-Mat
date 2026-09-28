@@ -287,6 +287,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Settings changes apply to today and future days only (per-day snapshot). *(2026-09-28)*
 - Aktivität is not a food Rubrik; sport entries go there automatically. *(2026-09-28)*
 - Allowed Google account: beer.markus@gmail.com. *(2026-09-28)*
+- App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1
 
