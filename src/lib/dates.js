@@ -76,3 +76,13 @@ export function relativeDayLabel(id, today = todayId()) {
   if (id === addDays(today, 1)) return 'Morgen'
   return WEEKDAYS_LONG[toUTC(id).getUTCDay()]
 }
+
+/** Same calendar day `n` months earlier/later, clamped to the month's last day. */
+export function addMonths(id, n) {
+  const [y, m, d] = id.split('-').map(Number)
+  const lastDay = new Date(Date.UTC(y, m - 1 + n + 1, 0)).getUTCDate()
+  return fromUTC(new Date(Date.UTC(y, m - 1 + n, Math.min(d, lastDay))))
+}
+
+/** Day ID → milliseconds at UTC midnight, for time-scaled chart axes. */
+export const dayMs = (id) => toUTC(id).getTime()

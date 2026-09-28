@@ -6,6 +6,7 @@ import { DataProvider } from './DataContext'
 import Datenbank from './screens/Datenbank'
 import Hinzufuegen from './screens/Hinzufuegen'
 import Heute from './screens/Heute'
+import Gewicht from './screens/Gewicht'
 import { todayId } from './lib/dates'
 import BuildTag from './components/BuildTag'
 
@@ -31,6 +32,8 @@ export default function Shell({ user }) {
         <BuildTag className="absolute top-1.5 right-4" />
         {tab === 'heute' ? (
           <Heute date={date} onDateChange={setDate} />
+        ) : tab === 'gewicht' ? (
+          <Gewicht />
         ) : tab === 'datenbank' ? (
           <Datenbank />
         ) : tab === 'hinzufuegen' ? (
