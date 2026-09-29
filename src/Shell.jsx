@@ -7,7 +7,6 @@ import Heute from './screens/Heute'
 import Gewicht from './screens/Gewicht'
 import Einstellungen from './screens/Einstellungen'
 import { todayId } from './lib/dates'
-import BuildTag from './components/BuildTag'
 
 // Five-tab bottom navigation, spec.md §3 / §7.3. Tabs are React state, no router.
 const TABS = [
@@ -28,7 +27,6 @@ export default function Shell({ user }) {
     <DataProvider>
     <div className="mx-auto flex min-h-dvh max-w-[480px] flex-col">
       <main className="relative flex-1 px-4 pt-6 pb-28">
-        <BuildTag className="absolute top-1.5 right-4" />
         {tab === 'heute' ? (
           <Heute date={date} onDateChange={setDate} />
         ) : tab === 'einstellungen' ? (

@@ -163,7 +163,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Navigation.** Five-tab bottom bar: Heute, Hinzufügen, Datenbank, Gewicht, Einstellungen. No URL router — tabs are React state (GitHub Pages has no server-side routing).
 - **Loading & errors.** While data loads, show a simple spinner. If a write fails, show a short German toast ("Speichern fehlgeschlagen") — no silent failures.
 - **Offline.** Firestore offline persistence is enabled; logging works without signal and syncs later.
-- **Build number.** A small "Build {n}" label is visible on every screen (top right; bottom of Anmeldung). `n` is the GitHub Actions run number of the deploy, so it increases with every push to `main`.
+- **Build number.** "Build {n}" is shown only in Einstellungen → Über, next to the version (e.g. "v0.1.0 · Build 19"). `n` is the GitHub Actions run number of the deploy, so it increases with every push to `main`.
 - **Confirmation.** Every delete asks "Wirklich löschen?" (Abbrechen / Löschen).
 
 ---
@@ -316,6 +316,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Gewicht shows points too: a separate stacked-bar chart on the same time axis instead of a second y-axis (Claude pushed back on dual axes; Markus agreed). Weekly bars for ranges longer than one month. *(2026-09-28)*
 - Food form shows exact (unrounded, one decimal) points next to every size, the "100 g" row included (replaces the separate "= … Pkt / 100 g" line). *(2026-09-28)*
 - Heute: non-zero section totals and entry points bold green in all sections, like Aktivität. *(2026-09-29)*
+- Build number only in Einstellungen, removed from all other screens. *(2026-09-29)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

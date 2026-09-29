@@ -59,7 +59,7 @@ Markus is not a programmer — a solo "vibe coder" who builds by prompting AI an
 
 - **Language:** talk to Markus in English. All text inside the app (labels, buttons, messages) is German, exactly as written in spec.md.
 - **Testing:** Markus tests on his Android phone via the live GitHub Pages URL. A phase is only "done" when he has confirmed its deliverable there — not when the code compiles. Tell him precisely what to tap and what he should see.
-- **Build number:** the app shows "Build {n}" (the GitHub Actions run number). After every push to `main`, tell Markus which build number to look for (check the latest deploy run) so he knows the update has arrived.
+- **Build number:** the app shows "Build {n}" (the GitHub Actions run number) in Einstellungen → Über. After every push to `main`, tell Markus which build number to look for (check the latest deploy run) so he knows the update has arrived.
 - **Tests you write yourself:** the points formula, rounding, and weekly overflow (spec.md §1) must have automated unit tests (Vitest). Those calculations are the heart of the app and are easy to get subtly wrong.
 
 ## Infrastructure setup — guide him through it, don't hand him a checklist
