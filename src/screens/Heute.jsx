@@ -16,6 +16,9 @@ import SummaryCard from './heute/SummaryCard'
 import Section, { EntryRow } from './heute/Section'
 import TrackerCard from './heute/TrackerCard'
 import WeightRow from './heute/WeightRow'
+import Fab from '../components/Fab'
+import BottomSheet from '../components/BottomSheet'
+import QuickEntryForm from './hinzufuegen/QuickEntryForm'
 import FoodSheet from './hinzufuegen/FoodSheet'
 import SportSheet from './hinzufuegen/SportSheet'
 
@@ -31,7 +34,7 @@ function unitsForEntry(entry, food) {
   return units
 }
 
-export default function Heute({ date, onDateChange }) {
+export default function Heute({ date, onDateChange, onAdd }) {
   const { foods, trackers, settings } = useData()
   const toast = useToast()
   const dates = useMemo(() => weekDates(date), [date])
@@ -155,7 +158,18 @@ export default function Heute({ date, onDateChange }) {
         onSave={(kg) => write({ weight: kg })}
       />
 
-      {editing?.field === 'entries' && (
+      {/* Keep the weight row clear of the floating button. */}
+      <div className="h-16" aria-hidden="true" />
+      <Fab onClick={onAdd} label="Hinzufügen" />
+
+      {editing?.field === 'entries' && editing.item.type === 'quick' && (
+        <BottomSheet onClose={closeEdit} label={editing.item.foodName}>
+          <QuickEntryForm key={editing.item.id} initial={editing.item} submitText="Speichern" onSubmit={saveEdit}>
+            {deleteButton}
+          </QuickEntryForm>
+        </BottomSheet>
+      )}
+      {editing?.field === 'entries' && editing.item.type !== 'quick' && (
         <FoodSheet
           key={editing.item.id}
           food={{

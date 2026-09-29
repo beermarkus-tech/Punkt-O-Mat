@@ -20,3 +20,17 @@ export function foodPoints({ qty, unitGrams, kcal_100, fat_100 }) {
 export function sportPoints({ minutes, pointsPer30Min }) {
   return roundHalf((minutes / 30) * pointsPer30Min)
 }
+
+/** Free entry ("Frei"): kcal and fat are totals of what was eaten; rounded once (spec.md §4.2). */
+export function quickPoints({ kcal, fat }) {
+  return roundHalf(refValue(kcal, fat))
+}
+
+/**
+ * Rechner (spec.md §4.7): exact points for kcal/fat, optionally given per 100 g for `grams` grams.
+ * Unrounded — display it with one decimal (formatRef).
+ */
+export function calculatorPoints({ kcal, fat, grams }) {
+  const factor = grams > 0 ? grams / 100 : 1
+  return refValue(kcal, fat) * factor
+}

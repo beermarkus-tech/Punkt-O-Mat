@@ -6,7 +6,8 @@ export function unitChipLabel(label) {
 }
 
 /** Row text for a food entry (spec.md §4.1): "1 Klein Brezel", "35 g Brezel", "2 × 100 g Brezel". */
-export function entryLabel({ qty, unitLabel, foodName }) {
+export function entryLabel({ type, qty, unitLabel, foodName }) {
+  if (type === 'quick') return foodName // free entry: just its title (spec.md §4.2)
   const q = formatNumber(qty)
   if (unitLabel === 'g') return `${q} g ${foodName}`
   if (/^\d/.test(unitLabel)) return `${q} × ${unitLabel} ${foodName}`

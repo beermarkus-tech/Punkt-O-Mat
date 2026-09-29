@@ -126,6 +126,8 @@ dailyLogs/{yyyy-mm-dd}
       qty: number,                   // e.g. 1, 1.5, or 35 (free grams)
       points: number,                // logged_points (§1.1)
       loggedAt: timestamp }
+    // Free entry ("Frei", §4.2) — no catalog food behind it:
+    // { id, type: "quick", section, foodName /* the title */, kcal, fat /* totals */, points, loggedAt }
   ]
   sport: [
     { id: string, sportId: string,
@@ -159,8 +161,8 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 
 ## 3. App-wide behavior
 
-- **Selected date.** The app holds one "selected date" (default: today). Heute shows it; Hinzufügen writes to it. Switching tabs keeps it. Reopening the app resets it to today.
-- **Navigation.** Five-tab bottom bar: Heute, Hinzufügen, Datenbank, Gewicht, Einstellungen. No URL router — tabs are React state (GitHub Pages has no server-side routing).
+- **Selected date.** The app holds one "selected date" (default: today). Heute shows it; the Hinzufügen panel writes to it. Switching tabs keeps it. Reopening the app resets it to today.
+- **Navigation.** Five-tab bottom bar: Heute, Rechner, Datenbank, Gewicht, Einstellungen. Hinzufügen is not a tab: it opens as a full-screen panel (✕ to close) from a floating green "+" on Heute (same button as in Datenbank), or from Rechner. No URL router — tabs are React state (GitHub Pages has no server-side routing).
 - **Loading & errors.** While data loads, show a simple spinner. If a write fails, show a short German toast ("Speichern fehlgeschlagen") — no silent failures.
 - **Offline.** Firestore offline persistence is enabled; logging works without signal and syncs later.
 - **Build number.** "Build {n}" is shown only in Einstellungen → Über, next to the version (e.g. "v0.1.0 · Build 19"). `n` is the GitHub Actions run number of the deploy, so it increases with every push to `main`.
@@ -182,9 +184,14 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Tracker cards:** one card per tracker, sorted by `order`, two per row. Shows icon, name, progress, "{value} / {target} {unit}". Tap the card → +`step`. A small "−" button on the card → −`step` (min 0). Values above target are allowed ("7 / 6"). Progress: segmented bar (one segment per step unit) when `target/step ≤ 10`, else a continuous bar.
 - **Weight row:** "Gewicht heute" (or "Gewicht" on other dates). Tap → numeric input (one decimal, 30–300 kg). Empty input clears the value (`null`).
 
-### 4.2 Hinzufügen — mockup `hinzufuegen.pdf`
+### 4.2 Hinzufügen — mockup `hinzufuegen.pdf` (layout of the lists and sheet; its tab position is obsolete)
+- **Opened** from the "+" on Heute (or "Als freie Eingabe hinzufügen" in Rechner) as a full-screen panel with ✕. Logs to the selected date.
 - **Title:** "Hinzufügen"; if the selected date isn't today, subtitle shows the date.
-- **Toggle at top:** "Lebensmittel | Sport".
+- **Toggle at top:** "Lebensmittel | Sport | Frei".
+
+**Frei mode (free entry)**
+- For food not in the Datenbank: Titel*, kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — and Rubrik (time-of-day suggestion). Live points = `roundHalf(fat/9 + kcal/60)`, rounded once like every logged entry. Button "Hinzufügen · {points} Pkt."; after adding the form clears and the panel stays open.
+- Saved only in that day's log (shape in §2), never in the Datenbank. On Heute the row shows the title and points; tapping it opens the same form with Speichern / Löschen.
 
 **Lebensmittel mode**
 - Search field: case-insensitive, accent-insensitive substring match on name ("brotchen" finds "Brötchen").
@@ -215,6 +222,11 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Sport list/form:** name*, Punkte pro 30 Min* (> 0, 0.5 steps).
 - **Tracker list/form:** name*, Einheit*, Tagesziel*, Schritt (default 1), icon (picker from §7.3), color (picker from §7.3), order (via up/down arrows in the list).
 - Deleting a food or sport never affects past logs (snapshots, §2).
+
+### 4.7 Rechner (tab)
+- Quick points calculator, nothing is saved. Fields **kcal**, **Fett (g)** and optional **Gramm**: empty → the values are used as entered; filled → kcal/fat are per 100 g and scaled to the grams.
+- Result, big: exact points `fat/9 + kcal/60` (× grams/100), **one decimal, rounded** (same one-decimal rule as elsewhere, e.g. 4,37 → 4,4) — not rounded to 0.5.
+- Button **"Als freie Eingabe hinzufügen"** opens the Hinzufügen panel in Frei mode with the (scaled) kcal and fat totals prefilled (one decimal).
 
 ### 4.6 Rezepte (recipes)
 A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g Griechischer Joghurt + 10 g Agavensirup + 40 g Cornflakes). It lives in the Lebensmittel list and behaves like any food everywhere else (search, categories, Hinzufügen, Heute, edit sheet).
@@ -317,6 +329,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Food form shows exact (unrounded, one decimal) points next to every size, the "100 g" row included (replaces the separate "= … Pkt / 100 g" line). *(2026-09-28)*
 - Heute: non-zero section totals and entry points bold green in all sections, like Aktivität. *(2026-09-29)*
 - Build number only in Einstellungen, removed from all other screens. *(2026-09-29)*
+- Hinzufügen moves behind a "+" on Heute; new "Frei" mode for arbitrary kcal/fat entries with a title (log only, not saved to Datenbank); new Rechner tab in its place (one decimal, rounded like everywhere else; optional grams; shortcut to Frei). Sport stays in the panel. *(2026-09-29)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

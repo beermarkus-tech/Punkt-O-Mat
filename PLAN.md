@@ -49,6 +49,9 @@ Staged phases, each with a concrete deliverable Markus can test on his phone. Re
 ## Phase 5 — Einstellungen
 **Deliverable:** daily allowance and weekly bonus editable (today + future only), account info, version, sign-out. (§4.5)
 
+## Phase 5b — "+" on Heute, free entry, Rechner (added 2026-09-29)
+**Deliverable:** Hinzufügen opens from a "+" on Heute (Lebensmittel / Sport / Frei); a free entry with title, kcal and fat is logged and editable on Heute; the Rechner tab shows exact points and can hand its values to a free entry. (§3, §4.2, §4.7)
+
 ## Phase 6 — Data migration (optional, as time allows)
 **Deliverable:** the old Excel food/sport catalog (and, if wanted, weight history) imported into Firestore. Needs Markus's Excel file and a decision on how its columns map to §2 — see DEVLOG open items.
 
