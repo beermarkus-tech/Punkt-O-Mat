@@ -177,7 +177,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 ### 4.1 Heute (dashboard) — mockup `heute.pdf`
 - **Header:** ◀ / ▶ arrows move one day; the date label in the middle opens a native date picker ("Zu Datum"). When the selected date is not today, a small "Heute" chip appears to jump back. Future dates allowed.
 - **Summary card (green):** big "VERBLEIBEND {n} Pkt." (per §1.4; negative shown in orange). Right side: "Maximum" = `dayBudget` (with small subtext "30 + 3 Sport" when sport > 0) and "Verbraucht" = `foodTotal`. Footer row: "Wochenbonus {poolLeft} / {weeklyBonus} übrig", where `poolLeft` is the pool remaining **after the selected day** in the §1.4 walk.
-- **Five sections:** Morgens, Mittags, Abends, Zwischendurch, Aktivität. Header shows name + section total ("15 Pkt."; Aktivität shows "−3 Pkt." in green). All collapsed on load; tapping a header toggles it; several may be open. Expanded rows: "{qty} {unitLabel} {foodName}" and points (e.g. "1 Klein Brezel oder Laugenstange   3"; free grams: "35 g Brezel …"; if unitLabel starts with a digit use "2 × 100 g …"). Aktivität rows: "{minutes} Min {sportName}   −{points}".
+- **Five sections:** Morgens, Mittags, Abends, Zwischendurch, Aktivität. Header shows name + section total ("15 Pkt."; Aktivität shows "−3 Pkt."). Non-zero totals and entry points are bold green in every section, zero stays muted. All collapsed on load; tapping a header toggles it; several may be open. Expanded rows: "{qty} {unitLabel} {foodName}" and points (e.g. "1 Klein Brezel oder Laugenstange   3"; free grams: "35 g Brezel …"; if unitLabel starts with a digit use "2 × 100 g …"). Aktivität rows: "{minutes} Min {sportName}   −{points}".
 - **Editing an entry:** tap a row → the same bottom sheet as Hinzufügen (§4.2), prefilled, with "Speichern" and "Löschen". Points are recomputed from the entry's own snapshot (§2), not from the current food.
 - **Tracker cards:** one card per tracker, sorted by `order`, two per row. Shows icon, name, progress, "{value} / {target} {unit}". Tap the card → +`step`. A small "−" button on the card → −`step` (min 0). Values above target are allowed ("7 / 6"). Progress: segmented bar (one segment per step unit) when `target/step ≤ 10`, else a continuous bar.
 - **Weight row:** "Gewicht heute" (or "Gewicht" on other dates). Tap → numeric input (one decimal, 30–300 kg). Empty input clears the value (`null`).
@@ -315,6 +315,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Recipes: a food of type "recipe" built from ingredients, values derived live from current ingredient foods, "Ergibt … Portionen" field; built as Phase 3b before Gewicht. *(2026-09-28)*
 - Gewicht shows points too: a separate stacked-bar chart on the same time axis instead of a second y-axis (Claude pushed back on dual axes; Markus agreed). Weekly bars for ranges longer than one month. *(2026-09-28)*
 - Food form shows exact (unrounded, one decimal) points next to every size, the "100 g" row included (replaces the separate "= … Pkt / 100 g" line). *(2026-09-28)*
+- Heute: non-zero section totals and entry points bold green in all sections, like Aktivität. *(2026-09-29)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

@@ -94,9 +94,23 @@ export default function Heute({ date, onDateChange }) {
           const items = entries.filter((e) => e.section === s.id)
           const total = items.reduce((sum, e) => sum + e.points, 0)
           return (
-            <Section key={s.id} title={s.label} total={`${formatPoints(total)} Pkt.`} open={open.has(s.id)} onToggle={() => toggle(s.id)} empty={!items.length}>
+            <Section
+              key={s.id}
+              title={s.label}
+              total={`${formatPoints(total)} Pkt.`}
+              totalClass={total !== 0 ? 'font-bold text-primary' : 'text-muted'}
+              open={open.has(s.id)}
+              onToggle={() => toggle(s.id)}
+              empty={!items.length}
+            >
               {items.map((e) => (
-                <EntryRow key={e.id} label={entryLabel(e)} points={formatPoints(e.points)} onClick={() => setEditing({ field: 'entries', item: e })} />
+                <EntryRow
+                  key={e.id}
+                  label={entryLabel(e)}
+                  points={formatPoints(e.points)}
+                  pointsClass={e.points !== 0 ? 'font-semibold text-primary' : ''}
+                  onClick={() => setEditing({ field: 'entries', item: e })}
+                />
               ))}
             </Section>
           )
