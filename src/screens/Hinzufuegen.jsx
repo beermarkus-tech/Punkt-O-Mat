@@ -45,9 +45,11 @@ export default function Hinzufuegen({ date, initialMode = 'food', prefill, onClo
     }
   }, [pendingFoodId, foods])
 
+  // Every successful add closes the whole panel and returns to Heute (spec.md §4.2).
   const add = (field, item) => {
     persist(addToLog({ date, log, settings, field, item }), toast)
     toast('Hinzugefügt')
+    onClose()
   }
 
   return (

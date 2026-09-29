@@ -190,7 +190,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Toggle at top:** "Lebensmittel | Sport | Frei".
 
 **Frei mode (free entry)**
-- For food not in the Datenbank: Titel*, kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — and Rubrik (time-of-day suggestion). Live points = `roundHalf(fat/9 + kcal/60)`, rounded once like every logged entry. Button "Hinzufügen · {points} Pkt."; after adding the form clears and the panel stays open.
+- For food not in the Datenbank: Titel*, kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — and Rubrik (time-of-day suggestion). Live points = `roundHalf(fat/9 + kcal/60)`, rounded once like every logged entry. Button "Hinzufügen · {points} Pkt."; after adding, the panel closes (like every add).
 - Saved only in that day's log (shape in §2), never in the Datenbank. On Heute the row shows the title and points; tapping it opens the same form with Speichern / Löschen.
 
 **Lebensmittel mode**
@@ -203,7 +203,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
   - **Größe:** chips for each unit ("100 g", "1 Klein", "1 Mittel" …) plus a final chip **"Gramm"**. Horizontally scrollable if they don't fit. Default: first non-default unit if one exists, else "100 g".
   - **Menge:** for normal units, − / + stepper in **0.5 steps**, min 0.5, default 1. For "Gramm", a numeric field for whole grams (stored as `unitLabel "g"`, `unitGrams 1`, `qty = grams`).
   - **Rubrik:** chips Morgens / Mittags / Abends / Zwischendurch, pre-selected by time of day (below), freely changeable.
-  - Button "Hinzufügen · {points} Pkt." → saves, closes the sheet, clears the search, shows toast "Hinzugefügt", stays on Hinzufügen (so several items for one meal can be added quickly).
+  - Button "Hinzufügen · {points} Pkt." → saves, shows toast "Hinzugefügt" and **closes the whole Hinzufügen panel**, back to Heute. The same applies to sport and Frei: every successful add closes the panel.
 - **Time-of-day suggestion** (local time, applies whatever date is selected):
   - 04:00–10:59 → Morgens
   - 11:00–14:59 → Mittags
@@ -330,6 +330,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Heute: non-zero section totals and entry points bold green in all sections, like Aktivität. *(2026-09-29)*
 - Build number only in Einstellungen, removed from all other screens. *(2026-09-29)*
 - Hinzufügen moves behind a "+" on Heute; new "Frei" mode for arbitrary kcal/fat entries with a title (log only, not saved to Datenbank); new Rechner tab in its place (one decimal, rounded like everywhere else; optional grams; shortcut to Frei). Sport stays in the panel. *(2026-09-29)*
+- Hinzufügen panel closes automatically after every add (food, sport, Frei). *(2026-09-29)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1
