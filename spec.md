@@ -219,6 +219,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - Segmented control: Lebensmittel / Sport / Tracker. Floating "+" button adds a new item of the active type.
 - **Lebensmittel list:** search field (same matching as §4.2), grouped by first letter (Ä/Ö/Ü sort with A/O/U), each row: name, subtitle = remark if present else "{category} · {n} Größen", reference value right-aligned. Tap → edit form.
 - **Food form:** Name*, Kategorie* (dropdown of existing categories, alphabetical, plus "+ Neue Kategorie …" which switches to a text field; a typed name matching an existing category ignoring case uses the existing spelling), Bemerkung, kcal pro 100 g*, Fett pro 100 g*, units list (add / rename / change grams / delete; "100 g" row locked; every size row, including the locked "100 g", shows its exact points for one piece, one decimal, not rounded to 0.5, in one aligned column — display only). Validation: required fields, numbers ≥ 0, unit grams > 0, unit labels unique within the food, food name unique. Buttons: Speichern, Löschen (edit only).
+- **Kategorien:** a "Kategorien" button next to the Lebensmittel search opens a full-screen list of all categories (alphabetical, with the number of foods, recipes included). Tapping one opens a sheet with its name; Speichern renames it on every food at once (toast "Umbenannt"). If the new name matches another existing category (ignoring case), the app asks „{Name}“ gibt es schon. {n} Lebensmittel dorthin verschieben? and merges into that category's spelling. Log entries don't store categories, so history is unaffected. There is no delete: a category disappears once no food uses it.
 - **Sport list/form:** name*, Punkte pro 30 Min* (> 0, 0.5 steps).
 - **Tracker list/form:** name*, Einheit*, Tagesziel*, Schritt (default 1), icon (picker from §7.3), color (picker from §7.3), order (via up/down arrows in the list).
 - Deleting a food or sport never affects past logs (snapshots, §2).
@@ -331,6 +332,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Build number only in Einstellungen, removed from all other screens. *(2026-09-29)*
 - Hinzufügen moves behind a "+" on Heute; new "Frei" mode for arbitrary kcal/fat entries with a title (log only, not saved to Datenbank); new Rechner tab in its place (one decimal, rounded like everywhere else; optional grams; shortcut to Frei). Sport stays in the panel. *(2026-09-29)*
 - Hinzufügen panel closes automatically after every add (food, sport, Frei). *(2026-09-29)*
+- Categories can be renamed/merged from a "Kategorien" list in Datenbank → Lebensmittel. *(2026-09-30)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

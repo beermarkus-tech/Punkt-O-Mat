@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../../DataContext'
 import SearchInput from '../../components/SearchInput'
+import CategoryManager from './CategoryManager'
 import Spinner from '../../components/Spinner'
 import { formatPoints } from '../../lib/format'
 import { displayRef, foodPoints } from '../../lib/points'
@@ -18,6 +19,7 @@ function subtitle(food) {
 export default function FoodList({ onOpen }) {
   const { foods } = useData()
   const [query, setQuery] = useState('')
+  const [managing, setManaging] = useState(false)
 
   const groups = useMemo(() => {
     const list = (foods ?? []).filter((f) => matches(f.name, query)).sort(byName)
@@ -34,7 +36,19 @@ export default function FoodList({ onOpen }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <SearchInput value={query} onChange={setQuery} />
+      <div className="flex gap-2">
+        <div className="min-w-0 flex-1">
+          <SearchInput value={query} onChange={setQuery} />
+        </div>
+        <button
+          type="button"
+          onClick={() => setManaging(true)}
+          className="shrink-0 rounded-card border border-border bg-card px-4 text-[15px] font-semibold text-primary active:border-primary"
+        >
+          Kategorien
+        </button>
+      </div>
+      {managing && <CategoryManager onClose={() => setManaging(false)} />}
       {groups.length === 0 && (
         <p className="py-8 text-center text-muted">{foods.length === 0 ? 'Noch keine Lebensmittel' : 'Keine Treffer'}</p>
       )}
