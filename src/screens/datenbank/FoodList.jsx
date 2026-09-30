@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react'
 import { useData } from '../../DataContext'
 import SearchInput from '../../components/SearchInput'
+import CategoryChips, { useCategoryFilter } from '../../components/CategoryChips'
 import CategoryManager from './CategoryManager'
 import Spinner from '../../components/Spinner'
 import { formatPoints } from '../../lib/format'
 import { displayRef, foodPoints } from '../../lib/points'
 import { isRecipe } from '../../lib/recipes'
 import RecipeTag from '../../components/RecipeTag'
-import { byName, letterOf, matches } from '../../lib/text'
+import { byName, matches } from '../../lib/text'
 
 function subtitle(food) {
   if (food.remark) return food.remark
@@ -21,16 +22,11 @@ export default function FoodList({ onOpen }) {
   const [query, setQuery] = useState('')
   const [managing, setManaging] = useState(false)
 
-  const groups = useMemo(() => {
-    const list = (foods ?? []).filter((f) => matches(f.name, query)).sort(byName)
-    const map = new Map()
-    for (const f of list) {
-      const letter = letterOf(f.name)
-      if (!map.has(letter)) map.set(letter, [])
-      map.get(letter).push(f)
-    }
-    return [...map.entries()]
-  }, [foods, query])
+  const filter = useCategoryFilter(foods)
+  const results = useMemo(
+    () => (foods ?? []).filter((f) => filter.matches(f) && matches(f.name, query)).sort(byName),
+    [foods, filter.category, query], // eslint-disable-line react-hooks/exhaustive-deps
+  )
 
   if (!foods) return <Spinner inline />
 
@@ -48,35 +44,31 @@ export default function FoodList({ onOpen }) {
           Kategorien
         </button>
       </div>
+      <CategoryChips categories={filter.categories} category={filter.category} onChange={filter.setCategory} />
       {managing && <CategoryManager onClose={() => setManaging(false)} />}
-      {groups.length === 0 && (
+      {results.length === 0 && (
         <p className="py-8 text-center text-muted">{foods.length === 0 ? 'Noch keine Lebensmittel' : 'Keine Treffer'}</p>
       )}
-      {groups.map(([letter, items]) => (
-        <section key={letter} className="flex flex-col gap-2">
-          <h3 className="px-1 pt-2 text-sm font-bold text-muted">{letter}</h3>
-          {items.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => onOpen(f)}
-              className="flex items-center gap-3 rounded-card border border-border bg-card px-5 py-3.5 text-left active:border-primary"
-            >
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center gap-2">
-                  <span className="truncate text-[17px] font-semibold">{f.name}</span>
-                  {isRecipe(f) && <RecipeTag />}
-                </span>
-                <span className="block truncate text-sm text-muted">{subtitle(f)}</span>
-              </span>
-              <span className="text-lg font-bold text-primary">
-                {isRecipe(f)
-                  ? formatPoints(foodPoints({ ...f, qty: 1, unitGrams: f.units[1].grams }))
-                  : formatPoints(displayRef(f.kcal_100, f.fat_100))}
-              </span>
-            </button>
-          ))}
-        </section>
+      {results.map((f) => (
+        <button
+          key={f.id}
+          type="button"
+          onClick={() => onOpen(f)}
+          className="flex items-center gap-3 rounded-card border border-border bg-card px-5 py-3.5 text-left active:border-primary"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-2">
+              <span className="truncate text-[17px] font-semibold">{f.name}</span>
+              {isRecipe(f) && <RecipeTag />}
+            </span>
+            <span className="block truncate text-sm text-muted">{subtitle(f)}</span>
+          </span>
+          <span className="text-lg font-bold text-primary">
+            {isRecipe(f)
+              ? formatPoints(foodPoints({ ...f, qty: 1, unitGrams: f.units[1].grams }))
+              : formatPoints(displayRef(f.kcal_100, f.fat_100))}
+          </span>
+        </button>
       ))}
     </div>
   )

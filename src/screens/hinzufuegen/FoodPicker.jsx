@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { ChevronRight, Plus } from 'lucide-react'
 import { useData } from '../../DataContext'
 import SearchInput from '../../components/SearchInput'
 import Spinner from '../../components/Spinner'
-import Chip from '../../components/Chip'
+import CategoryChips, { useCategoryFilter } from '../../components/CategoryChips'
 import { formatPoints } from '../../lib/format'
 import { displayRef, foodPoints } from '../../lib/points'
 import { isRecipe } from '../../lib/recipes'
@@ -13,18 +13,10 @@ import { byName, matches } from '../../lib/text'
 /** Search + category chips + result list. The parent owns the query so it can clear it after adding. */
 export default function FoodPicker({ query, onQuery, onPick, onCreate }) {
   const { foods } = useData()
-  const [category, setCategory] = useState(null)
-
-  const categories = useMemo(
-    () => [...new Set((foods ?? []).map((f) => f.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de')),
-    [foods],
-  )
+  const filter = useCategoryFilter(foods)
   const results = useMemo(
-    () =>
-      (foods ?? [])
-        .filter((f) => (!category || f.category === category) && matches(f.name, query))
-        .sort(byName),
-    [foods, category, query],
+    () => (foods ?? []).filter((f) => filter.matches(f) && matches(f.name, query)).sort(byName),
+    [foods, filter.category, query], // eslint-disable-line react-hooks/exhaustive-deps
   )
 
   if (!foods) return <Spinner inline />
@@ -32,18 +24,7 @@ export default function FoodPicker({ query, onQuery, onPick, onCreate }) {
   return (
     <div className="flex flex-col gap-3">
       <SearchInput value={query} onChange={onQuery} />
-      {categories.length > 0 && (
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-          <Chip className="rounded-full" active={!category} onClick={() => setCategory(null)}>
-            Alle
-          </Chip>
-          {categories.map((c) => (
-            <Chip key={c} className="rounded-full" active={category === c} onClick={() => setCategory(c)}>
-              {c}
-            </Chip>
-          ))}
-        </div>
-      )}
+      <CategoryChips categories={filter.categories} category={filter.category} onChange={filter.setCategory} />
 
       {results.map((f) => (
         <button
