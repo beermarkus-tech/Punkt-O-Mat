@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculatorPoints, quickPoints } from './points'
+import { calculatorPoints, directPoints, quickPoints } from './points'
 import { formatRef } from './format'
 import { entryLabel } from './entries'
 
@@ -11,6 +11,15 @@ describe('free entry points (§4.2)', () => {
   })
   it('labels a free entry with its title', () => {
     expect(entryLabel({ type: 'quick', foodName: 'Pizza beim Italiener' })).toBe('Pizza beim Italiener')
+  })
+})
+
+describe('free entry with points typed in (§4.2)', () => {
+  it('rounds to 0.5 like every logged entry', () => {
+    expect(directPoints(4)).toBe(4)
+    expect(directPoints(3.7)).toBe(3.5)
+    expect(directPoints(3.8)).toBe(4)
+    expect(directPoints(0)).toBe(0)
   })
 })
 

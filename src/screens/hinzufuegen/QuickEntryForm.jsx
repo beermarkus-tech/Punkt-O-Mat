@@ -1,41 +1,64 @@
 import { useState } from 'react'
 import Chip from '../../components/Chip'
+import SegmentedControl from '../../components/SegmentedControl'
 import { Field, inputClass, numberError } from '../../components/form'
 import { formatPoints, parseNumber, toInput } from '../../lib/format'
-import { quickPoints } from '../../lib/points'
+import { directPoints, quickPoints } from '../../lib/points'
 import { SECTIONS, suggestSection } from '../../lib/dates'
 
+const INPUT_MODES = [
+  { value: 'kcal', label: 'kcal & Fett' },
+  { value: 'points', label: 'Punkte' },
+]
+
 /**
- * Free entry ("Frei", spec.md §4.2): title + total kcal + total fat → points, rounded once.
- * `initial` may hold { foodName, kcal, fat, section } (editing, or prefilled from Rechner).
- * onSubmit receives the entry fields (without id/loggedAt).
+ * Free entry ("Frei", spec.md §4.2): a title plus either total kcal + total fat or the points typed in directly.
+ * `initial` may hold { foodName, kcal, fat, points, section } (editing, or prefilled from Rechner);
+ * an existing entry without kcal is a points entry.
+ * onSubmit receives the entry fields (without id/loggedAt); kcal and fat are null for a points entry.
  */
 export default function QuickEntryForm({ initial, submitText, onSubmit, children }) {
+  const [mode, setMode] = useState(initial?.type === 'quick' && initial.kcal == null ? 'points' : 'kcal')
   const [title, setTitle] = useState(initial?.foodName ?? '')
   const [kcal, setKcal] = useState(toInput(initial?.kcal))
   const [fat, setFat] = useState(toInput(initial?.fat))
+  const [pointsText, setPointsText] = useState(initial?.type === 'quick' && initial.kcal == null ? toInput(initial.points) : '')
   const [section, setSection] = useState(initial?.section ?? suggestSection())
   const [submitted, setSubmitted] = useState(false)
 
   const k = parseNumber(kcal)
   const f = parseNumber(fat)
+  const p = parseNumber(pointsText)
   const errors = {}
   if (!title.trim()) errors.title = 'Pflichtfeld'
-  const kErr = numberError(kcal, k)
-  if (kErr) errors.kcal = kErr
-  const fErr = numberError(fat, f)
-  if (fErr) errors.fat = fErr
+  if (mode === 'kcal') {
+    const kErr = numberError(kcal, k)
+    if (kErr) errors.kcal = kErr
+    const fErr = numberError(fat, f)
+    if (fErr) errors.fat = fErr
+  } else {
+    const pErr = numberError(pointsText, p)
+    if (pErr) errors.points = pErr
+  }
   const shown = submitted ? errors : {}
-  const points = k >= 0 && f >= 0 ? quickPoints({ kcal: k, fat: f }) : 0
+  const points = mode === 'kcal' ? (k >= 0 && f >= 0 ? quickPoints({ kcal: k, fat: f }) : 0) : p >= 0 ? directPoints(p) : 0
 
   const submit = () => {
     setSubmitted(true)
     if (Object.keys(errors).length) return
-    onSubmit({ type: 'quick', foodName: title.trim(), kcal: k, fat: f, section, points })
+    onSubmit({
+      type: 'quick',
+      foodName: title.trim(),
+      kcal: mode === 'kcal' ? k : null,
+      fat: mode === 'kcal' ? f : null,
+      section,
+      points,
+    })
     // Ready for the next one (the parent may also close the form).
     setTitle('')
     setKcal('')
     setFat('')
+    setPointsText('')
     setSubmitted(false)
   }
 
@@ -52,14 +75,24 @@ export default function QuickEntryForm({ initial, submitText, onSubmit, children
           <div className="text-sm text-muted">Pkt.</div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label="kcal gesamt" required error={shown.kcal}>
-          <input inputMode="decimal" value={kcal} onChange={(e) => setKcal(e.target.value)} className={inputClass(shown.kcal)} />
+
+      <SegmentedControl options={INPUT_MODES} value={mode} onChange={setMode} />
+
+      {mode === 'kcal' ? (
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="kcal gesamt" required error={shown.kcal}>
+            <input inputMode="decimal" value={kcal} onChange={(e) => setKcal(e.target.value)} className={inputClass(shown.kcal)} />
+          </Field>
+          <Field label="Fett gesamt (g)" required error={shown.fat}>
+            <input inputMode="decimal" value={fat} onChange={(e) => setFat(e.target.value)} className={inputClass(shown.fat)} />
+          </Field>
+        </div>
+      ) : (
+        <Field label="Punkte" required error={shown.points}>
+          <input inputMode="decimal" value={pointsText} onChange={(e) => setPointsText(e.target.value)} className={inputClass(shown.points)} />
         </Field>
-        <Field label="Fett gesamt (g)" required error={shown.fat}>
-          <input inputMode="decimal" value={fat} onChange={(e) => setFat(e.target.value)} className={inputClass(shown.fat)} />
-        </Field>
-      </div>
+      )}
+
       <div>
         <h3 className="mb-2 text-xs font-bold tracking-wider text-muted uppercase">Rubrik</h3>
         <div className="grid grid-cols-2 gap-2">

@@ -127,7 +127,7 @@ dailyLogs/{yyyy-mm-dd}
       points: number,                // logged_points (§1.1)
       loggedAt: timestamp }
     // Free entry ("Frei", §4.2) — no catalog food behind it:
-    // { id, type: "quick", section, foodName /* the title */, kcal, fat /* totals */, points, loggedAt }
+    // { id, type: "quick", section, foodName /* the title */, kcal, fat /* totals; both null if the points were typed in */, points, loggedAt }
   ]
   sport: [
     { id: string, sportId: string,
@@ -190,7 +190,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Toggle at top:** "Lebensmittel | Sport | Frei".
 
 **Frei mode (free entry)**
-- For food not in the Datenbank: Titel*, kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — and Rubrik (time-of-day suggestion). Live points = `roundHalf(fat/9 + kcal/60)`, rounded once like every logged entry. Button "Hinzufügen · {points} Pkt."; after adding, the panel closes (like every add).
+- For food not in the Datenbank: Titel*, a switch **"kcal & Fett | Punkte"**, and Rubrik (time-of-day suggestion). "kcal & Fett": kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — with live points `roundHalf(fat/9 + kcal/60)`. "Punkte": one field *Punkte** (number ≥ 0, comma allowed) for when the number is already known; it is rounded to 0.5 like every logged entry (typed 3,7 → logged 3,5; the live number shows what will be logged). Either way rounded once. Button "Hinzufügen · {points} Pkt."; after adding, the panel closes (like every add).
 - Saved only in that day's log (shape in §2), never in the Datenbank. On Heute the row shows the title and points; tapping it opens the same form with Speichern / Löschen.
 
 **Lebensmittel mode**
@@ -334,6 +334,8 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Hinzufügen panel closes automatically after every add (food, sport, Frei). *(2026-09-29)*
 - Categories can be renamed/merged from a "Kategorien" list in Datenbank → Lebensmittel. *(2026-09-30)*
 - Datenbank Lebensmittel gets the same category filter chips as Hinzufügen (shared component); letter headings removed. *(2026-09-30)*
+- Free entry can take points directly instead of kcal and fat (switch "kcal & Fett | Punkte"); typed points are rounded to 0.5 like all logged entries. *(2026-10-03)*
+- Gewicht "Alles" always spans at least four weeks so the weekly points bars are drawn even with little data. *(2026-10-03)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1

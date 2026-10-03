@@ -10,7 +10,7 @@ import { useLogsRange } from '../hooks/useWeekLogs'
 import { addDays, dayMs, todayId, weekDates } from '../lib/dates'
 import { pointsHistory } from '../lib/history'
 import { updateLog } from '../lib/log'
-import { pointsInRange, rangeStart, RANGES, weightStats } from '../lib/weight'
+import { allRangeStart, pointsInRange, rangeStart, RANGES, weightStats } from '../lib/weight'
 import { formatWeight, WeightSheet } from './heute/WeightRow'
 import WeightChart from './gewicht/WeightChart'
 import PointsChart, { PointsLegend } from './gewicht/PointsChart'
@@ -59,9 +59,9 @@ export default function Gewicht() {
   const points = weights ? pointsInRange(weights, range, today) : []
   const stats = weightStats(points)
 
-  // "Alles" starts at the earliest weight or log.
+  // "Alles" starts at the earliest weight or log, but spans at least four weeks (else the weekly bars vanish).
   const firstLog = logs && Object.keys(logs).filter((d) => d <= today).sort()[0]
-  const from = start ?? [points[0]?.date, firstLog].filter(Boolean).sort()[0] ?? today
+  const from = start ?? allRangeStart([points[0]?.date, firstLog], today)
   // Both charts share one time axis. Daily bars sit on the day, so pad half a day each side.
   const xDomain = weekly
     ? [dayMs(weekDates(from)[0]), dayMs(addDays(weekDates(today)[6], 1))]

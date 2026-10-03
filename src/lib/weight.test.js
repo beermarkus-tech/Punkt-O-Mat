@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { addMonths } from './dates'
-import { pointsInRange, rangeStart, weightDomain, weightStats } from './weight'
+import { allRangeStart, pointsInRange, rangeStart, weightDomain, weightStats } from './weight'
 
 const TODAY = '2026-09-28'
 const pts = [
@@ -11,6 +11,17 @@ const pts = [
   { date: '2026-09-28', weight: 102 },
   { date: '2026-09-30', weight: 101 }, // future: ignored
 ]
+
+describe('"Alles" start (§4.4)', () => {
+  it('spans at least four weeks even with only this week\u2019s data', () => {
+    // today = Mon 28 Sept 2026 → this week's Monday is today; 3 weeks earlier = 7 Sept
+    expect(allRangeStart(['2026-09-28'], '2026-09-28')).toBe('2026-09-07')
+    expect(allRangeStart([undefined, undefined], '2026-10-03')).toBe('2026-09-07')
+  })
+  it('starts at the earliest data when it is older', () => {
+    expect(allRangeStart(['2026-06-02', '2026-09-20'], '2026-09-28')).toBe('2026-06-02')
+  })
+})
 
 describe('weight ranges (§4.4)', () => {
   it('counts back from today', () => {

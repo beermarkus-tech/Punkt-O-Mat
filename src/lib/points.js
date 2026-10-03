@@ -21,6 +21,11 @@ export function sportPoints({ minutes, pointsPer30Min }) {
   return roundHalf((minutes / 30) * pointsPer30Min)
 }
 
+/** Free entry with points typed in directly: same 0.5 rounding as every logged entry (spec.md §4.2). */
+export function directPoints(value) {
+  return roundHalf(value)
+}
+
 /** Free entry ("Frei"): kcal and fat are totals of what was eaten; rounded once (spec.md §4.2). */
 export function quickPoints({ kcal, fat }) {
   return roundHalf(refValue(kcal, fat))

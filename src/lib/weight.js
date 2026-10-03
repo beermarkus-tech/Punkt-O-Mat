@@ -1,4 +1,4 @@
-import { addDays, addMonths } from './dates'
+import { addDays, addMonths, weekDates } from './dates'
 
 export const RANGES = [
   { id: '2w', label: '2 Wochen' },
@@ -42,4 +42,15 @@ export function weightStats(sorted) {
 export function weightDomain(sorted) {
   const weights = sorted.map((p) => p.weight)
   return [Math.floor(Math.min(...weights) - 1), Math.ceil(Math.max(...weights) + 1)]
+}
+
+export const MIN_WEEKS = 4
+
+/**
+ * First day shown for "Alles": the earliest weight/log date, but never less than MIN_WEEKS weeks back.
+ * A very short range leaves the weekly bars chart with a single time slot, and then it draws nothing.
+ */
+export function allRangeStart(dates, today) {
+  const minimum = addDays(weekDates(today)[0], -7 * (MIN_WEEKS - 1))
+  return [...dates.filter(Boolean), minimum].sort()[0]
 }
