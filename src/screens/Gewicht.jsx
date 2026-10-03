@@ -57,7 +57,7 @@ export default function Gewicht() {
   const points = weights ? pointsInRange(weights, range, today) : []
   const stats = weightStats(points)
 
-  // "Alles" starts at the earliest weight or log, but spans at least four weeks (else a single bar slot draws nothing).
+  // "Alles" zooms on the first entry (weight or log) → today.
   const firstLog = logs && Object.keys(logs).filter((d) => d <= today).sort()[0]
   const from = start ?? allRangeStart([points[0]?.date, firstLog], today)
   // Both charts share one time axis. Bars sit on the day, so pad half a day each side.

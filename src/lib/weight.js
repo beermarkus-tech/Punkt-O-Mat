@@ -44,13 +44,10 @@ export function weightDomain(sorted) {
   return [Math.floor(Math.min(...weights) - 1), Math.ceil(Math.max(...weights) + 1)]
 }
 
-export const MIN_WEEKS = 4
-
 /**
- * First day shown for "Alles": the earliest weight/log date, but never less than MIN_WEEKS weeks back.
- * A very short range leaves the weekly bars chart with a single time slot, and then it draws nothing.
+ * First day shown for "Alles" (spec.md §4.4): the earliest weight or log date, so the view zooms on first entry → today.
+ * At least yesterday: with a single day the bars chart has one time slot and draws nothing.
  */
 export function allRangeStart(dates, today) {
-  const minimum = addDays(weekDates(today)[0], -7 * (MIN_WEEKS - 1))
-  return [...dates.filter(Boolean), minimum].sort()[0]
+  return [...dates.filter(Boolean), addDays(today, -1)].sort()[0]
 }
