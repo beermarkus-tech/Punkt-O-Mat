@@ -7,7 +7,7 @@ import Spinner from '../components/Spinner'
 import Chip from '../components/Chip'
 import { persist } from '../data'
 import { useLogsRange } from '../hooks/useWeekLogs'
-import { addDays, dayMs, todayId, weekDates } from '../lib/dates'
+import { dayMs, todayId, weekDates } from '../lib/dates'
 import { pointsHistory } from '../lib/history'
 import { updateLog } from '../lib/log'
 import { allRangeStart, pointsInRange, rangeStart, RANGES, weightStats } from '../lib/weight'
@@ -16,8 +16,6 @@ import WeightChart from './gewicht/WeightChart'
 import PointsChart, { PointsLegend } from './gewicht/PointsChart'
 
 const HALF_DAY = 43200000
-// Weekly points bars for ranges longer than one month (Markus, 2026-09-28).
-const isWeekly = (range) => range === '3m' || range === 'all'
 
 const kg = (x) => x.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 const signedKg = (x) => (x > 0 ? `+${kg(x)}` : x < 0 ? `−${kg(-x)}` : kg(0))
@@ -51,26 +49,22 @@ export default function Gewicht() {
   const [range, setRange] = useState('1m')
   const [editing, setEditing] = useState(false)
 
-  const weekly = isWeekly(range)
   const start = rangeStart(range, today)
-  // Whole weeks are loaded so the weekly bonus is computed exactly as on Heute.
-  const logs = useLogsRange(start ? weekDates(start)[0] : '2000-01-01', weekDates(today)[6])
+  // All logs are loaded once, whatever the range, so switching ranges never reloads anything (no spinner, no flicker).
+  // The weekly bonus is then computed from whole weeks exactly as on Heute.
+  const logs = useLogsRange('2000-01-01', weekDates(today)[6])
 
   const points = weights ? pointsInRange(weights, range, today) : []
   const stats = weightStats(points)
 
-  // "Alles" starts at the earliest weight or log, but spans at least four weeks (else the weekly bars vanish).
+  // "Alles" starts at the earliest weight or log, but spans at least four weeks (else a single bar slot draws nothing).
   const firstLog = logs && Object.keys(logs).filter((d) => d <= today).sort()[0]
   const from = start ?? allRangeStart([points[0]?.date, firstLog], today)
-  // Both charts share one time axis. Daily bars sit on the day, so pad half a day each side.
-  const xDomain = weekly
-    ? [dayMs(weekDates(from)[0]), dayMs(addDays(weekDates(today)[6], 1))]
-    : [dayMs(from) - HALF_DAY, dayMs(today) + HALF_DAY]
-  const bars = logs ? pointsHistory({ from, to: today, logs, settings, weekly }) : []
+  // Both charts share one time axis. Bars sit on the day, so pad half a day each side.
+  const xDomain = [dayMs(from) - HALF_DAY, dayMs(today) + HALF_DAY]
+  const bars = logs ? pointsHistory({ from, to: today, logs, settings, weekly: false }) : []
   const hasBars = bars.some((b) => !b.empty)
-  const allowance = settings?.dailyAllowance ?? 30
-  const reference = weekly ? 7 * allowance + (settings?.weeklyBonus ?? 20) : allowance
-  const syncId = weekly ? undefined : 'gewicht'
+  const reference = settings?.dailyAllowance ?? 30
 
   return (
     <div className="flex flex-col gap-4">
@@ -84,16 +78,14 @@ export default function Gewicht() {
           <>
             <h2 className="px-2 text-sm font-semibold text-muted">Gewicht (kg)</h2>
             {points.length ? (
-              <WeightChart points={points} xDomain={xDomain} syncId={syncId} />
+              <WeightChart points={points} xDomain={xDomain} syncId="gewicht" />
             ) : (
               <p className="flex h-24 items-center justify-center px-6 text-center text-muted">Keine Messungen in diesem Zeitraum</p>
             )}
-            <h2 className="mt-3 border-t border-border px-2 pt-3 text-sm font-semibold text-muted">
-              {weekly ? 'Punkte pro Woche' : 'Punkte pro Tag'}
-            </h2>
+            <h2 className="mt-3 border-t border-border px-2 pt-3 text-sm font-semibold text-muted">Punkte pro Tag</h2>
             {hasBars ? (
               <>
-                <PointsChart bars={bars} xDomain={xDomain} syncId={syncId} reference={reference} />
+                <PointsChart bars={bars} xDomain={xDomain} syncId="gewicht" reference={reference} />
                 <PointsLegend />
               </>
             ) : (
