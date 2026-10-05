@@ -10,6 +10,7 @@ import BottomSheet from '../components/BottomSheet'
 import { inputClass, primaryButtonClass } from '../components/form'
 import { persist } from '../data'
 import { todayId } from '../lib/dates'
+import { pingAnalysis } from '../lib/analyzeApi'
 
 const SETTINGS = [
   { key: 'dailyAllowance', label: 'Tägliche Punkte', fallback: 30 },
@@ -77,6 +78,22 @@ function Avatar({ user }) {
   )
 }
 
+/** "KI-Analyse" row: tap to check that the photo-analysis function answers (costs nothing, sends no photo). */
+function AiStatus() {
+  const [state, setState] = useState(null) // null | 'checking' | { ok, message }
+  const check = async () => {
+    setState('checking')
+    setState(await pingAnalysis())
+  }
+  const text = state === 'checking' ? 'Prüfe …' : state ? (state.ok ? 'Verbunden' : state.message) : 'Prüfen'
+  return (
+    <button type="button" onClick={check} className={`${card} flex w-full items-center px-5 py-4 text-left active:bg-bg`}>
+      <span className="flex-1 text-[17px]">KI-Analyse</span>
+      <span className={`font-semibold ${state && state !== 'checking' ? (state.ok ? 'text-primary' : 'text-accent') : 'text-muted'}`}>{text}</span>
+    </button>
+  )
+}
+
 export default function Einstellungen({ user }) {
   const { settings } = useData()
   const toast = useToast()
@@ -123,6 +140,11 @@ export default function Einstellungen({ user }) {
             <div className="truncate text-sm text-muted">Google-Konto verbunden</div>
           </div>
         </div>
+      </section>
+
+      <section>
+        <h2 className={sectionTitle}>Foto-Analyse</h2>
+        <AiStatus />
       </section>
 
       <section>

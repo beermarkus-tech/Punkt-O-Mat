@@ -85,3 +85,19 @@ Append-only. One entry per work session, newest at the bottom. Never edit or del
 - Old branch deletion; `(default)` database rules of the other apps; Phase 6 Excel structure; §4.1/§4.2 defaults.
 
 **Next session should:** get confirmation of Gewicht and Einstellungen, then ask Markus whether to do Phase 6 (needs his Excel file) or Phase 7 polish.
+
+## 2026-10-05 — Phases 3b–5b catch-up, then Phase 8 (Foto-Analyse): 8a–8c built
+
+**What was built or changed:**
+- Since the last entry (all confirmed by Markus unless noted): Gewicht and Einstellungen; floating "+" opens Hinzufügen from Heute; free entry ("Frei") with kcal/fat or direct points; Rechner tab; category chips shared by Datenbank and Hinzufügen, category rename; build number only in Einstellungen → Über; Gewicht "Alles" zooms from the first entry to today with daily points bars.
+- Phase 8a: Cloud Function `analyzeMeal` (callable, 2nd gen, europe-west1) in the shared project `exercise-tracker`, own codebase `punkt-o-mat` (`functions/`, `firebase.json`), secret `PUNKTOMAT_ANTHROPIC_KEY`, param `PUNKTOMAT_MODEL` (default `claude-opus-5-5`). Checks the allowed email, daily cap 40 (`aiUsage/{date}` in the `punkt-o-mat` database), validates input, cleans output. 27 unit tests (`npm run test:functions`). **Deployed by Markus from Cloud Shell; the Functions list shows `analyzeMeal` plus the untouched `stripeWebhook` and `createCheckoutSession`.**
+- Phases 8b/8c: camera segment in Hinzufügen (plain file input, photo shrunk on the phone), waiting screen, review (checkbox, grams, source tag, swap for a Datenbank food, add a missed food, Rubrik), saved as entries with `source: "photo"` in one write, toast with "Rückgängig" for the whole meal, "KI-Analyse" connection test in Einstellungen. 79 app tests.
+
+**State:** 8a deployed; 8b/8c pushed, **not yet tested on a phone**. Not done: 8d (tuning on ~10 real meals, model comparison).
+
+**Open items (awaiting Markus):**
+- Server-side fallback on refusals was deliberately not enabled; say if wanted.
+- The Anthropic spending limit is organisation-wide (shared with Erdkeller); a workspace limit and a Google Cloud budget alert (~€5) are recommended. Unclear whether the key sits in a dedicated workspace.
+- Carried over: delete old branch `claude/upload-mockups-repo-fq1kc4`; `(default)` database rules of his other apps; Phase 6 Excel import (needs his file); Phase 7 polish; "just added" list on Hinzufügen.
+
+**Next session should:** get Markus's feedback on the photo flow, then run 8d with his real meals.

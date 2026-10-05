@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { Camera, X } from 'lucide-react'
 import { useData } from '../DataContext'
 import { useDocument } from '../hooks/useDocument'
 import { useToast } from '../components/ToastContext'
@@ -7,17 +7,20 @@ import SegmentedControl from '../components/SegmentedControl'
 import { persist } from '../data'
 import { formatDateLabel, suggestSection, todayId } from '../lib/dates'
 import { addToLog } from '../lib/log'
+import { addMeal, undoMeal } from '../lib/photo'
 import FoodPicker from './hinzufuegen/FoodPicker'
 import FoodSheet from './hinzufuegen/FoodSheet'
 import SportPicker from './hinzufuegen/SportPicker'
 import SportSheet from './hinzufuegen/SportSheet'
 import QuickEntryForm from './hinzufuegen/QuickEntryForm'
+import PhotoFlow from './hinzufuegen/PhotoFlow'
 import FoodForm from './datenbank/FoodForm'
 
 const MODES = [
   { value: 'food', label: 'Lebensmittel' },
   { value: 'sport', label: 'Sport' },
   { value: 'quick', label: 'Frei' },
+  { value: 'photo', label: <Camera size={20} className="mx-auto" />, ariaLabel: 'Foto-Analyse' },
 ]
 
 /**
@@ -52,6 +55,17 @@ export default function Hinzufuegen({ date, initialMode = 'food', prefill, onClo
     onClose()
   }
 
+  // A photo meal is one write; the toast offers to take the whole meal back (spec.md §4.8).
+  const addPhotoMeal = (entries) => {
+    const { stored, promise } = addMeal({ date, log, settings, entries })
+    persist(promise, toast)
+    toast(`${stored.length} ${stored.length === 1 ? 'Eintrag' : 'Einträge'} hinzugefügt`, {
+      label: 'Rückgängig',
+      onClick: () => persist(undoMeal({ date, stored }), toast),
+    })
+    onClose()
+  }
+
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-bg">
       <div className="mx-auto flex max-w-[480px] flex-col gap-4 px-4 pt-4 pb-10">
@@ -68,6 +82,7 @@ export default function Hinzufuegen({ date, initialMode = 'food', prefill, onClo
 
         {mode === 'food' && <FoodPicker query={query} onQuery={setQuery} onPick={setFood} onCreate={setCreating} />}
         {mode === 'sport' && <SportPicker onPick={setSport} />}
+        {mode === 'photo' && <PhotoFlow onSave={addPhotoMeal} />}
         {mode === 'quick' && (
           <div className="rounded-card border border-border bg-card p-4">
             <QuickEntryForm initial={prefill} submitText="Hinzufügen" onSubmit={(entry) => add('entries', entry)} />

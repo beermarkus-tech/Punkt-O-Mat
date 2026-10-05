@@ -9,6 +9,7 @@ export default function SegmentedControl({ options, value, onChange }) {
             type="button"
             role="tab"
             aria-selected={active}
+            aria-label={o.ariaLabel}
             onClick={() => onChange(o.value)}
             className={`flex-1 rounded-chip py-2.5 text-[15px] ${active ? 'bg-primary font-semibold text-white' : 'text-muted'}`}
           >
