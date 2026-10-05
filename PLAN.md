@@ -55,6 +55,13 @@ Staged phases, each with a concrete deliverable Markus can test on his phone. Re
 ## Phase 6 — Data migration (optional, as time allows)
 **Deliverable:** the old Excel food/sport catalog (and, if wanted, weight history) imported into Firestore. Needs Markus's Excel file and a decision on how its columns map to §2 — see DEVLOG open items.
 
+## Phase 8 — Foto-Analyse (added 2026-10-05; spec.md §4.8)
+**Deliverable:** Markus photographs a meal behind the "+" on Heute, reviews Claude's list of items with points, corrects it, and adds it to the day; the whole meal can be undone.
+- **8a Infrastructure** (guided step by step in conversation): check the existing Functions in `exercise-tracker` (done: `stripeWebhook`, `createCheckoutSession`, us-central1); Markus creates a dedicated Anthropic workspace, key and monthly spending limit; `functions/` codebase + `firebase.json` + deploy script in the repo; Markus deploys from Google Cloud Shell with `--only functions:analyzeMeal`; budget alert; "KI-Analyse verbunden" test row in Einstellungen.
+- **8b App side:** camera button (no `accept`/`capture`), image shrinking, size guard, callable client, German error messages, offline state.
+- **8c Screens:** camera segment in the Hinzufügen panel, waiting screen, review step, save as entries with `source: "photo"`, undo for the whole meal, retry.
+- **8d Tuning:** about 10 of Markus's real meals; compare Opus 5.5, Sonnet 5.5 and Haiku 4.5 for accuracy, speed and cost; adjust the prompt.
+
 ## Phase 7 — Polish
 - Recent/favorites quick-add on Hinzufügen
 - Weekly/monthly rollup stats

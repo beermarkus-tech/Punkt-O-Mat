@@ -255,6 +255,15 @@ A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g G
 
 ---
 
+### 4.8 Foto-Analyse (planned, PLAN.md Phase 8)
+Photograph a meal; Claude estimates what is visible; Markus reviews and adds it to the selected day. Lives behind the "+" on Heute as a fourth segment of the Hinzufügen panel, an icon-only camera: **Lebensmittel | Sport | Frei | 📷**.
+- **Capture:** one button using a plain file input **without** `accept` / `capture` (so Android's chooser offers Camera and gallery). The photo is shrunk on the phone (long edge ≤ 1568 px, JPEG ≈ 0.75) and checked for size before sending. Optional text field "Hinweis" (e.g. "Joghurt fettarm, halbe Portion"). Needs a network connection.
+- **Analysis:** the phone sends the photo, the hint and the Datenbank as compact `id<TAB>name` lines to the Cloud Function (§5). It returns a list of items: name, `matchedFoodId` (or null), estimated grams, per-100 g kcal and fat for unmatched items, confidence (hoch / mittel / niedrig), optional note, and an `optional` flag (e.g. hidden cooking fat, suggested but unchecked). Claude never computes points; the app does, with the same formula and rounding as everywhere (§1.1, one rounding per item).
+- **Waiting screen:** photo preview, "Claude schaut sich dein Essen an …", Abbrechen; typically 10–25 s.
+- **Review (nothing is saved before this):** one row per item with checkbox, grams, points and a source tag ("Datenbank" or "KI-Schätzung · confidence"). Tap a row to change name or grams, or to swap it for a real food from the Datenbank; touching a row clears its confidence badge. Unknown IDs from Claude become unmatched items instead of being dropped. "+ Weiteres Lebensmittel" for anything missed, Rubrik chips (time-of-day suggestion), total, button "Zu Heute hinzufügen · {n} Pkt.". If nothing could be read: a clear message and a retry button that resends the same photo.
+- **Saving:** one log entry per checked item through the normal path (§2): matched items as ordinary entries (unit "g"), unmatched estimates as free entries (type "quick", kcal/fat totals), all with `source: "photo"`. The panel closes and the toast offers "Rückgängig" for the whole meal.
+- **Privacy / cost:** photos are not stored anywhere. Roughly 3–7 cents per photo depending on the model (measured during tuning); a daily cap and a spending limit protect the budget.
+
 ## 5. Stack & deployment
 
 - React + Vite + Tailwind CSS, Recharts (weight chart), lucide-react (icons), vite-plugin-pwa (installable, offline shell).
@@ -264,6 +273,8 @@ A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g G
 - **Firebase project:** the shared project `exercise-tracker` (not a dedicated one). Punkt-o-Mat gets its own registered web app and its own Firestore database `punkt-o-mat` (`eur3`). Auth (Google provider, authorized domains, user list) is **shared** with the other apps in the project: check it, but never change a shared setting in a way that affects them.
 - **Firebase console setup:** database `punkt-o-mat` exists (done); Google sign-in provider enabled and `beermarkus-tech.github.io` in Auth → Settings → Authorized domains (likely already true, since the other apps use the same setup — verify).
 - Built with Claude Code from an Android tablet; Markus is not a programmer (see CLAUDE.md).
+
+- **Cloud Function (Phase 8):** `analyzeMeal`, a callable 2nd-gen function in the shared Firebase project `exercise-tracker` (Blaze plan), region in Europe. The shared project already hosts other apps' functions (`stripeWebhook`, `createCheckoutSession` in us-central1), so ours lives in its **own codebase** in this repo, is deployed only by name (`--only functions:analyzeMeal`), never with `--force`, and uses a uniquely named secret (`PUNKTOMAT_ANTHROPIC_KEY`). Deployment is a separate step from the GitHub Pages deploy (Google Cloud Shell, run by Markus). A budget alert in Google Cloud is recommended.
 
 ## 6. Security
 
@@ -281,6 +292,8 @@ service cloud.firestore {
   }
 }
 ```
+
+**Photo analysis function (Phase 8):** being signed in is not enough, because any Google account can sign in to the Firebase project. `analyzeMeal` must check that `request.auth.token.email` is the allowed email and `email_verified` is true, enforce a size limit and a daily cap (counted in Firestore), and keep the Anthropic API key only as a Firebase secret (a dedicated key in its own Anthropic workspace with a monthly spending limit).
 
 The same email is a constant in the app (`ALLOWED_EMAIL`) to show the "Kein Zugriff" screen (§4.0). Rules are pasted into the Firebase console (Firestore → select database `punkt-o-mat` → Rules) — no Firebase CLI needed. Rules are per database, so these never affect the other apps' databases in the shared project. Allowed email (confirmed by Markus): `beer.markus@gmail.com`.
 
@@ -337,6 +350,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Free entry can take points directly instead of kcal and fat (switch "kcal & Fett | Punkte"); typed points are rounded to 0.5 like all logged entries. *(2026-10-03)*
 - Gewicht "Alles" zooms on the period from the first entry (weight or log) to today (at least two days, because a single day cannot draw bars). *(2026-10-03)*
 - Gewicht points chart: daily bars in every range, including 3 Monate and Alles (replaces the weekly bars decided on 2026-09-28). Logs are loaded once for all ranges so switching ranges shows no spinner. *(2026-10-03)*
+- Photo meal analysis (Phase 8): Firebase Cloud Function in exercise-tracker (already on Blaze; Erdkeller is a separate project, so its function cannot be reused), own codebase and unique secret name because the project also hosts Stripe functions; dedicated Anthropic key with spending limit; camera icon as 4th segment; photos not stored; model chosen by testing Opus 5.5 / Sonnet 5.5 / Haiku 4.5 on real meals. *(2026-10-05)*
 - App icon: white apple with orange leaf and a green point, on green (option 07). Files in `public/`. *(2026-09-28)*
 
 ## 9. Out of scope for v1
