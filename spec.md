@@ -347,6 +347,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Hinzufügen moves behind a "+" on Heute; new "Frei" mode for arbitrary kcal/fat entries with a title (log only, not saved to Datenbank); new Rechner tab in its place (one decimal, rounded like everywhere else; optional grams; shortcut to Frei). Sport stays in the panel. *(2026-09-29)*
 - Hinzufügen panel closes automatically after every add (food, sport, Frei). *(2026-09-29)*
 - **Reversed:** the Hinzufügen panel now stays open after an add until Markus closes it with ✕, because he usually adds several items at once. *(2026-10-05)*
+- Hinzufügen toggle: first segment renamed "Lebensmittel" → "Essen" (the label was cramped next to the camera icon). *(2026-10-05)*
 - Categories can be renamed/merged from a "Kategorien" list in Datenbank → Lebensmittel. *(2026-09-30)*
 - Datenbank Lebensmittel gets the same category filter chips as Hinzufügen (shared component); letter headings removed. *(2026-09-30)*
 - Free entry can take points directly instead of kcal and fat (switch "kcal & Fett | Punkte"); typed points are rounded to 0.5 like all logged entries. *(2026-10-03)*
@@ -361,4 +362,3 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Export/import of the food catalog (CSV) — except the one-off migration in PLAN.md Phase 6
 - Barcode scanning, online nutrition databases
 - Dark mode
-- Hinzufügen toggle: first segment renamed "Lebensmittel" → "Essen" (the label was cramped next to the camera icon). *(2026-10-05)*
