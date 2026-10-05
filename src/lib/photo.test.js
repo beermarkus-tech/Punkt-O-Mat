@@ -12,6 +12,10 @@ describe('review rows', () => {
     const u = itemFromResult(result(), byId)
     expect(u).toMatchObject({ foodId: null, name: 'Spaghetti', kcal100: 150, fat100: 2 })
   })
+  it('remembers that the values come from the label, unless the food is matched', () => {
+    expect(itemFromResult(result({ fromLabel: true }), byId).fromLabel).toBe(true)
+    expect(itemFromResult(result({ fromLabel: true, matchedFoodId: 'b1' }), byId).fromLabel).toBe(false)
+  })
   it('treats an id that is no longer in the Datenbank as unmatched', () => {
     expect(itemFromResult(result({ matchedFoodId: 'gone' }), byId).foodId).toBeNull()
   })

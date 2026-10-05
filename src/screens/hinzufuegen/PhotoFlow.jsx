@@ -20,6 +20,14 @@ const CONFIDENCE_CLASS = {
 /** One tag per row: where the numbers come from (spec.md §4.8). */
 function SourceTag({ item }) {
   if (item.foodId) return <span className="rounded-chip bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">Datenbank</span>
+  if (item.fromLabel) {
+    // Values come from the printed nutrition table; the grams are still an estimate until the user touches the row.
+    return (
+      <span className="rounded-chip bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">
+        Etikett{item.confidence ? ' · Gramm geschätzt' : ''}
+      </span>
+    )
+  }
   return (
     <span className={`rounded-chip px-2 py-0.5 text-xs font-semibold ${CONFIDENCE_CLASS[item.confidence] ?? 'bg-border text-muted'}`}>
       KI-Schätzung{item.confidence ? ` · ${item.confidence}` : ''}

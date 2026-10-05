@@ -39,6 +39,7 @@ const item = (over = {}) => ({
   grams: 250,
   kcalPer100: 150,
   fatPer100: 2,
+  fromLabel: false,
   confidence: 'mittel',
   optional: false,
   note: '',
@@ -175,6 +176,20 @@ describe('cleanResult', () => {
   })
   it('copes with a missing item list', () => {
     expect(cleanResult({ mealTitle: 'Nur Titel' }, foods)).toEqual({ mealTitle: 'Nur Titel', items: [] })
+  })
+})
+
+describe('nutrition label', () => {
+  it('tells Claude to read the label and not to search the web', () => {
+    const r = buildRequest({ model: 'claude-opus-5-5', imageBase64: IMG, mimeType: 'image/jpeg', foods: [], hint: '' })
+    expect(r.system).toContain('fromLabel')
+    expect(r.system).toContain('pro 100 g')
+    expect(r.system).toMatch(/Suche nichts im Internet/)
+  })
+  it('keeps fromLabel only for items that are not matched to the Datenbank', () => {
+    const foods = [{ id: 'real1', name: 'Brezel' }]
+    const r = cleanResult({ mealTitle: '', items: [item({ fromLabel: true }), item({ name: 'Brezel', matchedFoodId: 'real1', fromLabel: true }), item({ name: 'Käse' })] }, foods)
+    expect(r.items.map((i) => i.fromLabel)).toEqual([true, false, false])
   })
 })
 

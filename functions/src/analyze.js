@@ -78,6 +78,7 @@ const ItemSchema = z.object({
   grams: z.number(),
   kcalPer100: z.number(),
   fatPer100: z.number(),
+  fromLabel: z.boolean(),
   confidence: z.enum(['hoch', 'mittel', 'niedrig']),
   optional: z.boolean(),
   note: z.string(),
@@ -95,6 +96,8 @@ Aufgabe:
 Abgleich mit den bekannten Lebensmitteln des Nutzers:
 - Du bekommst eine Liste mit Zeilen im Format id<TAB>name. Wenn ein Eintrag eindeutig dasselbe Lebensmittel ist, gib dessen id exakt so zurück, wie sie in der Liste steht, in "matchedFoodId".
 - Erfinde niemals eine id. Wenn du nicht sicher bist, dass es genau dieses Lebensmittel ist, gib null zurück. Ein falscher Treffer ist schlimmer als kein Treffer.
+
+Nährwerttabelle auf der Verpackung: Wenn auf dem Foto die Nährwerte eines Produkts lesbar sind (Tabelle "Nährwerte pro 100 g" oder "Brennwert / Fett"), verwende genau diese Zahlen für kcal und Fett pro 100 g statt typischer Werte und setze "fromLabel": true. Rechne Angaben "pro Portion" auf 100 g um (Portionsgröße steht meist daneben). Lies kcal, nicht kJ. Wenn Zahlen unleserlich oder abgeschnitten sind, rate nicht: nimm typische Werte und "fromLabel": false. Das Gewicht schätzt du trotzdem aus dem Foto, außer es ist klar, dass die ganze Packung gegessen wird und das Füllgewicht lesbar ist. Alles ohne lesbares Etikett bekommt "fromLabel": false. Suche nichts im Internet.
 
 Konfidenz ("confidence"): "hoch", "mittel" oder "niedrig". Sie gilt für beides, die Erkennung und die Gramm-Schätzung. Sei ehrlich: Portionsgrößen auf Fotos sind schwer zu schätzen.
 
@@ -151,6 +154,7 @@ export function cleanResult(parsed, foods) {
       grams: Number.isFinite(it.grams) ? Math.round(clamp(it.grams, 0, MAX_GRAMS)) : 0,
       kcalPer100: Number.isFinite(it.kcalPer100) ? Math.round(clamp(it.kcalPer100, 0, 900) * 10) / 10 : 0,
       fatPer100: Number.isFinite(it.fatPer100) ? Math.round(clamp(it.fatPer100, 0, 100) * 10) / 10 : 0,
+      fromLabel: it.fromLabel === true && !known.has(it.matchedFoodId),
       confidence: ['hoch', 'mittel', 'niedrig'].includes(it.confidence) ? it.confidence : 'niedrig',
       optional: it.optional === true,
       note: oneLine(it.note ?? '').slice(0, 200),

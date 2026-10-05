@@ -22,6 +22,7 @@ export function itemFromResult(r, foodsById) {
     kcal100: food ? food.kcal_100 : r.kcalPer100,
     fat100: food ? food.fat_100 : r.fatPer100,
     confidence: r.confidence,
+    fromLabel: !food && r.fromLabel === true,
     note: r.note,
     optional: r.optional,
     checked: !r.optional,
