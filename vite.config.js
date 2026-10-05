@@ -13,6 +13,8 @@ export default defineConfig({
     __BUILD__: JSON.stringify(process.env.VITE_BUILD ?? 'dev'),
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
+  // functions/ has its own dependencies and tests (npm run test:functions).
+  test: { exclude: ['**/node_modules/**', 'functions/**'] },
   plugins: [
     react(),
     tailwindcss(),

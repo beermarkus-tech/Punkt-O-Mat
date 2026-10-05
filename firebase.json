@@ -1,0 +1,9 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "punkt-o-mat",
+      "ignore": ["node_modules", ".git", "*.log", "src/*.test.js"]
+    }
+  ]
+}
