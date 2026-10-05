@@ -17,7 +17,7 @@ import PhotoFlow from './hinzufuegen/PhotoFlow'
 import FoodForm from './datenbank/FoodForm'
 
 const MODES = [
-  { value: 'food', label: 'Lebensmittel' },
+  { value: 'food', label: 'Essen' },
   { value: 'sport', label: 'Sport' },
   { value: 'quick', label: 'Frei' },
   { value: 'photo', label: <Camera size={20} className="mx-auto" />, ariaLabel: 'Foto-Analyse' },

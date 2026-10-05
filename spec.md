@@ -187,7 +187,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 ### 4.2 Hinzufügen — mockup `hinzufuegen.pdf` (layout of the lists and sheet; its tab position is obsolete)
 - **Opened** from the "+" on Heute (or "Als freie Eingabe hinzufügen" in Rechner) as a full-screen panel with ✕. Logs to the selected date.
 - **Title:** "Hinzufügen"; if the selected date isn't today, subtitle shows the date.
-- **Toggle at top:** "Lebensmittel | Sport | Frei".
+- **Toggle at top:** "Essen | Sport | Frei".
 
 **Frei mode (free entry)**
 - For food not in the Datenbank: Titel*, a switch **"kcal & Fett | Punkte"**, and Rubrik (time-of-day suggestion). "kcal & Fett": kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — with live points `roundHalf(fat/9 + kcal/60)`. "Punkte": one field *Punkte** (number ≥ 0, comma allowed) for when the number is already known; it is rounded to 0.5 like every logged entry (typed 3,7 → logged 3,5; the live number shows what will be logged). Either way rounded once. Button "Hinzufügen · {points} Pkt."; after adding, the panel stays open (like every add).
@@ -256,7 +256,7 @@ A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g G
 ---
 
 ### 4.8 Foto-Analyse (PLAN.md Phase 8)
-Photograph a meal; Claude estimates what is visible; Markus reviews and adds it to the selected day. Lives behind the "+" on Heute as a fourth segment of the Hinzufügen panel, an icon-only camera: **Lebensmittel | Sport | Frei | 📷**.
+Photograph a meal; Claude estimates what is visible; Markus reviews and adds it to the selected day. Lives behind the "+" on Heute as a fourth segment of the Hinzufügen panel, an icon-only camera: **Essen | Sport | Frei | 📷**.
 - **Capture:** one button using a plain file input **without** `accept` / `capture` (so Android's chooser offers Camera and gallery). The photo is shrunk on the phone (long edge ≤ 1568 px, JPEG ≈ 0.75) and checked for size before sending. Optional text field "Hinweis" (e.g. "Joghurt fettarm, halbe Portion"). Needs a network connection.
 - **Analysis:** the phone sends the photo, the hint and the Datenbank as compact `id<TAB>name` lines to the Cloud Function (§5). It returns a list of items: name, `matchedFoodId` (or null), estimated grams, per-100 g kcal and fat for unmatched items (read from the nutrition table when it is legible in the photo, flagged `fromLabel` and shown as "Etikett"; Claude never searches the web), confidence (hoch / mittel / niedrig), optional note, and an `optional` flag (e.g. hidden cooking fat, suggested but unchecked). Claude never computes points; the app does, with the same formula and rounding as everywhere (§1.1, one rounding per item).
 - **Waiting screen:** photo preview, "Claude schaut sich dein Essen an …", Abbrechen; typically 10–25 s.
@@ -361,3 +361,4 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Export/import of the food catalog (CSV) — except the one-off migration in PLAN.md Phase 6
 - Barcode scanning, online nutrition databases
 - Dark mode
+- Hinzufügen toggle: first segment renamed "Lebensmittel" → "Essen" (the label was cramped next to the camera icon). *(2026-10-05)*
