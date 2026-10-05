@@ -190,7 +190,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - **Toggle at top:** "Lebensmittel | Sport | Frei".
 
 **Frei mode (free entry)**
-- For food not in the Datenbank: Titel*, a switch **"kcal & Fett | Punkte"**, and Rubrik (time-of-day suggestion). "kcal & Fett": kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — with live points `roundHalf(fat/9 + kcal/60)`. "Punkte": one field *Punkte** (number ≥ 0, comma allowed) for when the number is already known; it is rounded to 0.5 like every logged entry (typed 3,7 → logged 3,5; the live number shows what will be logged). Either way rounded once. Button "Hinzufügen · {points} Pkt."; after adding, the panel closes (like every add).
+- For food not in the Datenbank: Titel*, a switch **"kcal & Fett | Punkte"**, and Rubrik (time-of-day suggestion). "kcal & Fett": kcal gesamt*, Fett gesamt (g)* — **totals of what was eaten**, not per 100 g — with live points `roundHalf(fat/9 + kcal/60)`. "Punkte": one field *Punkte** (number ≥ 0, comma allowed) for when the number is already known; it is rounded to 0.5 like every logged entry (typed 3,7 → logged 3,5; the live number shows what will be logged). Either way rounded once. Button "Hinzufügen · {points} Pkt."; after adding, the panel stays open (like every add).
 - Saved only in that day's log (shape in §2), never in the Datenbank. On Heute the row shows the title and points; tapping it opens the same form with Speichern / Löschen.
 
 **Lebensmittel mode**
@@ -203,7 +203,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
   - **Größe:** chips for each unit ("100 g", "1 Klein", "1 Mittel" …) plus a final chip **"Gramm"**. Horizontally scrollable if they don't fit. Default: first non-default unit if one exists, else "100 g".
   - **Menge:** for normal units, − / + stepper in **0.5 steps**, min 0.5, default 1. For "Gramm", a numeric field for whole grams (stored as `unitLabel "g"`, `unitGrams 1`, `qty = grams`).
   - **Rubrik:** chips Morgens / Mittags / Abends / Zwischendurch, pre-selected by time of day (below), freely changeable.
-  - Button "Hinzufügen · {points} Pkt." → saves, shows toast "Hinzugefügt" and **closes the whole Hinzufügen panel**, back to Heute. The same applies to sport and Frei: every successful add closes the panel.
+  - Button "Hinzufügen · {points} Pkt." → saves, shows toast "Hinzugefügt" and **the Hinzufügen panel stays open** so several items can be added in a row; Markus closes it with ✕. The same applies to sport, Frei and Foto.
 - **Time-of-day suggestion** (local time, applies whatever date is selected):
   - 04:00–10:59 → Morgens
   - 11:00–14:59 → Mittags
@@ -261,7 +261,7 @@ Photograph a meal; Claude estimates what is visible; Markus reviews and adds it 
 - **Analysis:** the phone sends the photo, the hint and the Datenbank as compact `id<TAB>name` lines to the Cloud Function (§5). It returns a list of items: name, `matchedFoodId` (or null), estimated grams, per-100 g kcal and fat for unmatched items (read from the nutrition table when it is legible in the photo, flagged `fromLabel` and shown as "Etikett"; Claude never searches the web), confidence (hoch / mittel / niedrig), optional note, and an `optional` flag (e.g. hidden cooking fat, suggested but unchecked). Claude never computes points; the app does, with the same formula and rounding as everywhere (§1.1, one rounding per item).
 - **Waiting screen:** photo preview, "Claude schaut sich dein Essen an …", Abbrechen; typically 10–25 s.
 - **Review (nothing is saved before this):** one row per item with checkbox, grams, points and a source tag ("Datenbank" or "KI-Schätzung · confidence"). Tap a row to change name or grams, or to swap it for a real food from the Datenbank; touching a row clears its confidence badge. Unknown IDs from Claude become unmatched items instead of being dropped. "+ Weiteres Lebensmittel" for anything missed, Rubrik chips (time-of-day suggestion), total, button "Zu Heute hinzufügen · {n} Pkt.". If nothing could be read: a clear message and a retry button that resends the same photo.
-- **Saving:** one log entry per checked item through the normal path (§2): matched items as ordinary entries (unit "g"), unmatched estimates as free entries (type "quick", kcal/fat totals), all with `source: "photo"`. The panel closes and the toast offers "Rückgängig" for the whole meal.
+- **Saving:** one log entry per checked item through the normal path (§2): matched items as ordinary entries (unit "g"), unmatched estimates as free entries (type "quick", kcal/fat totals), all with `source: "photo"`. The panel stays open, ready for the next photo, and the toast offers "Rückgängig" for the whole meal.
 - **Connection test:** Einstellungen → Foto-Analyse → "KI-Analyse" sends a call without a photo; "Verbunden" means the function is deployed and accepts Markus. It costs nothing.
 - **Privacy / cost:** photos are not stored anywhere. Roughly 3–7 cents per photo depending on the model (measured during tuning); a daily cap and a spending limit protect the budget.
 
@@ -346,6 +346,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Build number only in Einstellungen, removed from all other screens. *(2026-09-29)*
 - Hinzufügen moves behind a "+" on Heute; new "Frei" mode for arbitrary kcal/fat entries with a title (log only, not saved to Datenbank); new Rechner tab in its place (one decimal, rounded like everywhere else; optional grams; shortcut to Frei). Sport stays in the panel. *(2026-09-29)*
 - Hinzufügen panel closes automatically after every add (food, sport, Frei). *(2026-09-29)*
+- **Reversed:** the Hinzufügen panel now stays open after an add until Markus closes it with ✕, because he usually adds several items at once. *(2026-10-05)*
 - Categories can be renamed/merged from a "Kategorien" list in Datenbank → Lebensmittel. *(2026-09-30)*
 - Datenbank Lebensmittel gets the same category filter chips as Hinzufügen (shared component); letter headings removed. *(2026-09-30)*
 - Free entry can take points directly instead of kcal and fat (switch "kcal & Fett | Punkte"); typed points are rounded to 0.5 like all logged entries. *(2026-10-03)*

@@ -270,7 +270,10 @@ export default function PhotoFlow({ onSave }) {
       <button
         type="button"
         disabled={checkedCount === 0}
-        onClick={() => onSave(buildEntries(items, section))}
+        onClick={() => {
+          onSave(buildEntries(items, section))
+          cancel() // ready for the next photo
+        }}
         className={`${primaryButtonClass} disabled:opacity-40`}
       >
         Zu Heute hinzufügen · {formatPoints(total)} Pkt.

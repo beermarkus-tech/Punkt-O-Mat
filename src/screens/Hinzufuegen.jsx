@@ -48,11 +48,10 @@ export default function Hinzufuegen({ date, initialMode = 'food', prefill, onClo
     }
   }, [pendingFoodId, foods])
 
-  // Every successful add closes the whole panel and returns to Heute (spec.md §4.2).
+  // The panel stays open after an add so several items can be added in a row; ✕ closes it (spec.md §4.2).
   const add = (field, item) => {
     persist(addToLog({ date, log, settings, field, item }), toast)
     toast('Hinzugefügt')
-    onClose()
   }
 
   // A photo meal is one write; the toast offers to take the whole meal back (spec.md §4.8).
@@ -63,7 +62,6 @@ export default function Hinzufuegen({ date, initialMode = 'food', prefill, onClo
       label: 'Rückgängig',
       onClick: () => persist(undoMeal({ date, stored }), toast),
     })
-    onClose()
   }
 
   return (
