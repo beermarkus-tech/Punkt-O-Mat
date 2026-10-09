@@ -43,18 +43,22 @@ function validate({ id, name, category, kcal, fat, units }, foods) {
   return e
 }
 
-/** Create or edit a food. onClose(savedId?) — savedId lets callers select the new food. */
-export default function FoodForm({ food, initialName = '', onClose }) {
+/**
+ * Create or edit a food. onClose(savedId?) — savedId lets callers select the new food.
+ * `initial` ({ kcal, fat, grams }, from Rechner) prefills a new food: kcal/fat per 100 g, and a first size of `grams` still without a name.
+ */
+export default function FoodForm({ food, initialName = '', initial, onClose }) {
   const { foods } = useData()
   const toast = useToast()
   const [name, setName] = useState(food?.name ?? initialName)
   const [category, setCategory] = useState(food?.category ?? '')
   const [remark, setRemark] = useState(food?.remark ?? '')
-  const [kcal, setKcal] = useState(toInput(food?.kcal_100))
-  const [fat, setFat] = useState(toInput(food?.fat_100))
-  const [units, setUnits] = useState(() =>
-    (food?.units ?? []).slice(1).map((u) => ({ key: nextKey++, label: u.label, grams: toInput(u.grams) })),
-  )
+  const [kcal, setKcal] = useState(toInput(food?.kcal_100 ?? initial?.kcal))
+  const [fat, setFat] = useState(toInput(food?.fat_100 ?? initial?.fat))
+  const [units, setUnits] = useState(() => {
+    if (!food && initial?.grams > 0) return [{ key: nextKey++, label: '', grams: toInput(initial.grams) }]
+    return (food?.units ?? []).slice(1).map((u) => ({ key: nextKey++, label: u.label, grams: toInput(u.grams) }))
+  })
   const [submitted, setSubmitted] = useState(false)
   const [confirming, setConfirming] = useState(false)
 

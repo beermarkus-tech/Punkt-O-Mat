@@ -8,9 +8,10 @@ const round1 = (x) => Math.round(x * 10) / 10
 
 /**
  * Points calculator (spec.md §4.7): kcal + fat (optionally per 100 g with a gram amount) → exact points,
- * one decimal. "Als freie Eingabe hinzufügen" opens the Hinzufügen panel with the totals prefilled.
+ * one decimal. "Als freie Eingabe hinzufügen" opens the Hinzufügen panel with the totals prefilled;
+ * "Als Lebensmittel hinzufügen" opens a new food in Datenbank (kcal/fat per 100 g as entered, Gramm = first size) and clears the fields.
  */
-export default function Rechner({ onAddQuick }) {
+export default function Rechner({ onAddQuick, onAddFood }) {
   const [kcal, setKcal] = useState('')
   const [fat, setFat] = useState('')
   const [grams, setGrams] = useState('')
@@ -63,6 +64,19 @@ export default function Rechner({ onAddQuick }) {
         className="flex items-center justify-center gap-2 rounded-chip border-2 border-primary bg-card py-3.5 font-semibold text-primary active:bg-primary-soft disabled:opacity-40"
       >
         <Plus size={20} /> Als freie Eingabe hinzufügen
+      </button>
+      <button
+        type="button"
+        disabled={points == null}
+        onClick={() => {
+          onAddFood({ kcal: k, fat: f, grams: g > 0 ? g : null })
+          setKcal('')
+          setFat('')
+          setGrams('')
+        }}
+        className="flex items-center justify-center gap-2 rounded-chip border-2 border-primary bg-card py-3.5 font-semibold text-primary active:bg-primary-soft disabled:opacity-40"
+      >
+        <Plus size={20} /> Als Lebensmittel hinzufügen
       </button>
     </div>
   )

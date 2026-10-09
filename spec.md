@@ -228,6 +228,7 @@ Deleting a tracker leaves old `trackerValues` keys in place; they are simply ign
 - Quick points calculator, nothing is saved. Fields **kcal**, **Fett (g)** and optional **Gramm**: empty → the values are used as entered; filled → kcal/fat are per 100 g and scaled to the grams.
 - Result, big: exact points `fat/9 + kcal/60` (× grams/100), **one decimal, rounded** (same one-decimal rule as elsewhere, e.g. 4,37 → 4,4) — not rounded to 0.5.
 - Button **"Als freie Eingabe hinzufügen"** opens the Hinzufügen panel in Frei mode with the (scaled) kcal and fat totals prefilled (one decimal).
+- Button **"Als Lebensmittel hinzufügen"** switches to Datenbank and opens the "Neues Lebensmittel" form: kcal and fat are taken **as entered, always as per 100 g** (not scaled); a filled Gramm field becomes a first size with that many grams (name still to be typed, e.g. "Stück"; its points show live). Name and Kategorie stay empty. Nothing is saved until Speichern; afterwards Markus stays in Datenbank. The Rechner fields are cleared when the button is tapped.
 
 ### 4.6 Rezepte (recipes)
 A recipe is a reusable combination of foods (e.g. "Frühstücksmüsli" = 100 g Griechischer Joghurt + 10 g Agavensirup + 40 g Cornflakes). It lives in the Lebensmittel list and behaves like any food everywhere else (search, categories, Hinzufügen, Heute, edit sheet).
@@ -348,6 +349,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - Hinzufügen panel closes automatically after every add (food, sport, Frei). *(2026-09-29)*
 - **Reversed:** the Hinzufügen panel now stays open after an add until Markus closes it with ✕, because he usually adds several items at once. *(2026-10-05)*
 - Hinzufügen toggle: first segment renamed "Lebensmittel" → "Essen" (the label was cramped next to the camera icon). *(2026-10-05)*
+- Rechner → "Als Lebensmittel hinzufügen": opens a new Datenbank food with kcal/fat per 100 g as entered and Gramm as a first, still unnamed size; stays in Datenbank afterwards; Rechner fields are cleared. *(2026-10-09)*
 - Categories can be renamed/merged from a "Kategorien" list in Datenbank → Lebensmittel. *(2026-09-30)*
 - Datenbank Lebensmittel gets the same category filter chips as Hinzufügen (shared component); letter headings removed. *(2026-09-30)*
 - Free entry can take points directly instead of kcal and fat (switch "kcal & Fett | Punkte"); typed points are rounded to 0.5 like all logged entries. *(2026-10-03)*

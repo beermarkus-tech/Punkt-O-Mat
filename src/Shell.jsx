@@ -25,6 +25,8 @@ export default function Shell({ user }) {
   const [date, setDate] = useState(todayId)
   // Open Hinzufügen panel: { mode, prefill } or null.
   const [adding, setAdding] = useState(null)
+  // New food prefilled by Rechner ({ kcal, fat, grams }); Datenbank opens its form with it once.
+  const [foodDraft, setFoodDraft] = useState(null)
 
   return (
     <DataProvider>
@@ -37,9 +39,15 @@ export default function Shell({ user }) {
         ) : tab === 'gewicht' ? (
           <Gewicht />
         ) : tab === 'datenbank' ? (
-          <Datenbank />
+          <Datenbank draft={foodDraft} onDraftUsed={() => setFoodDraft(null)} />
         ) : (
-          <Rechner onAddQuick={(prefill) => setAdding({ mode: 'quick', prefill })} />
+          <Rechner
+            onAddQuick={(prefill) => setAdding({ mode: 'quick', prefill })}
+            onAddFood={(draft) => {
+              setFoodDraft(draft)
+              setTab('datenbank')
+            }}
+          />
         )}
       </main>
 

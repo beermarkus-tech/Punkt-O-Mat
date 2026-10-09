@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SegmentedControl from '../components/SegmentedControl'
 import Fab from '../components/Fab'
 import FoodList from './datenbank/FoodList'
@@ -17,13 +17,16 @@ const TYPES = [
   { value: 'trackers', label: 'Tracker', add: 'Tracker hinzufügen' },
 ]
 
-export default function Datenbank() {
+export default function Datenbank({ draft, onDraftUsed }) {
   const [type, setType] = useState('foods')
   // { type, item } — item null means "new"
-  const [editing, setEditing] = useState(null)
+  const [editing, setEditing] = useState(() => (draft ? { type: 'foods', item: null, initial: draft } : null))
   const open = (item) => setEditing({ type: type === 'foods' && isRecipe(item) ? 'recipes' : type, item })
   const [choosing, setChoosing] = useState(false) // "+" on Lebensmittel: plain food or recipe?
   const close = () => setEditing(null)
+  useEffect(() => {
+    if (draft) onDraftUsed?.() // the prefilled form is open now; don't reopen it on the next visit
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col gap-4">
@@ -64,7 +67,7 @@ export default function Datenbank() {
         </BottomSheet>
       )}
 
-      {editing?.type === 'foods' && <FoodForm food={editing.item} onClose={close} />}
+      {editing?.type === 'foods' && <FoodForm food={editing.item} initial={editing.initial} onClose={close} />}
       {editing?.type === 'recipes' && <RecipeForm recipe={editing.item} onClose={close} />}
       {editing?.type === 'sports' && <SportForm sport={editing.item} onClose={close} />}
       {editing?.type === 'trackers' && <TrackerForm tracker={editing.item} onClose={close} />}
