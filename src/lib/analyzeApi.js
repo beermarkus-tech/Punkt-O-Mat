@@ -57,3 +57,11 @@ export async function pingAnalysis() {
     return { ok: false, message: 'Nicht erreichbar.' }
   }
 }
+
+const lookupFoodCall = httpsCallable(functions, 'lookupFood', { timeout: 45_000 })
+
+/** Typical values for a food name, from Claude's own knowledge (spec.md §4.9). Returns { candidates }. */
+export async function lookupFood({ name, categories }) {
+  const res = await lookupFoodCall({ name, categories })
+  return res.data
+}

@@ -5,6 +5,7 @@ import { initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import Anthropic from '@anthropic-ai/sdk'
 import { AnalysisError, runAnalysis } from './src/analyze.js'
+import { runLookup } from './src/lookup.js'
 
 // Dedicated key in its own Anthropic workspace. The secret name is unique on purpose: the shared Firebase project
 // also hosts other apps' functions (Stripe), and Secret Manager is project-wide.
@@ -33,6 +34,26 @@ export const analyzeMeal = onCall(
       if (err instanceof AnalysisError) throw new HttpsError(err.code, err.message)
       logger.error('analyzeMeal failed', err)
       throw new HttpsError('internal', 'Analyse fehlgeschlagen. Bitte nochmal versuchen.')
+    }
+  },
+)
+
+/**
+ * Food lookup for "Neues Lebensmittel" (spec.md §4.9): typical kcal/fat per 100 g from Claude's own knowledge.
+ * Same access check, daily cap and key as analyzeMeal.
+ */
+export const lookupFood = onCall(
+  { region: 'europe-west1', timeoutSeconds: 60, memory: '256MiB', maxInstances: 3, secrets: [anthropicKey] },
+  async (request) => {
+    try {
+      const client = new Anthropic({ apiKey: anthropicKey.value(), timeout: 25_000, maxRetries: 1 })
+      const result = await runLookup(request, { db, client, model: model.value() })
+      logger.info('lookupFood ok', { candidates: result.candidates.length, ...result.meta })
+      return result
+    } catch (err) {
+      if (err instanceof AnalysisError) throw new HttpsError(err.code, err.message)
+      logger.error('lookupFood failed', err)
+      throw new HttpsError('internal', 'Die Suche ist fehlgeschlagen. Bitte nochmal versuchen.')
     }
   },
 )

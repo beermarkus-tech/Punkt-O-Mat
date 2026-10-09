@@ -47,7 +47,7 @@ export async function reserveQuota(db, date, cap = DAILY_CAP) {
 
 // ---------------------------------------------------------------- input
 
-const oneLine = (s) => String(s).replace(/[\t\r\n]+/g, ' ').trim()
+export const oneLine = (s) => String(s).replace(/[\t\r\n]+/g, ' ').trim()
 
 /** Validate and clean what the phone sent. Nothing from the client is trusted. */
 export function validateInput(data) {
@@ -119,7 +119,7 @@ export const userText = (foods, hint) =>
   ].join('\n')
 
 // The effort setting exists on the current Opus / Sonnet / Fable models, but errors on Haiku 4.5.
-const supportsEffort = (model) => /^claude-(opus-(5|4-[678])|sonnet-(5|4-6)|fable-5|mythos-5)/.test(model)
+export const supportsEffort = (model) => /^claude-(opus-(5|4-[678])|sonnet-(5|4-6)|fable-5|mythos-5)/.test(model)
 
 export function buildRequest({ model, imageBase64, mimeType, foods, hint }) {
   return {
@@ -142,7 +142,7 @@ export function buildRequest({ model, imageBase64, mimeType, foods, hint }) {
 
 // ---------------------------------------------------------------- output
 
-const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x))
+export const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x))
 
 /** Sanity-check what the model returned: unknown ids become null, numbers are clamped, junk items dropped. */
 export function cleanResult(parsed, foods) {
@@ -166,7 +166,7 @@ export function cleanResult(parsed, foods) {
 
 // ---------------------------------------------------------------- the whole analysis
 
-function mapApiError(err) {
+export function mapApiError(err) {
   const status = err?.status
   if (status === 429) return new AnalysisError('resource-exhausted', 'Die KI ist gerade ausgelastet. Bitte gleich nochmal versuchen.')
   if (status === 529 || status >= 500 || status === undefined) {

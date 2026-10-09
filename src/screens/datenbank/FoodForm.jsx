@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { collection, deleteDoc, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
-import { Lock, Plus, Trash2 } from 'lucide-react'
+import { Lock, Plus, Sparkles, Trash2, X } from 'lucide-react'
 import { db } from '../../firebase'
 import { useData } from '../../DataContext'
 import { useToast } from '../../components/ToastContext'
@@ -9,8 +9,11 @@ import Sheet from '../../components/Sheet'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import CategoryPicker from './CategoryPicker'
 import { deleteButtonClass, Field, inputClass, numberError, primaryButtonClass } from '../../components/form'
-import { formatRef, parseNumber, toInput } from '../../lib/format'
+import { formatNumber, formatRef, parseNumber, toInput } from '../../lib/format'
 import { refValue } from '../../lib/points'
+import { lookupFood } from '../../lib/analyzeApi'
+import { friendlyError } from '../../lib/photo'
+import { lookupPatch } from '../../lib/foodLookup'
 
 // First unit of every food: fixed, never editable or deletable (spec.md §2).
 const DEFAULT_UNIT = { label: '100 g', grams: 100 }
@@ -61,6 +64,10 @@ export default function FoodForm({ food, initialName = '', initial, onClose }) {
   })
   const [submitted, setSubmitted] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  // "Vorschlag suchen" (spec.md §4.9): { status: 'loading' | 'done' | 'error', searched, candidates?, message? }
+  const [lookup, setLookup] = useState(null)
+  const [replacing, setReplacing] = useState(null) // suggestion waiting for "Werte ersetzen?"
+  const [aiFilled, setAiFilled] = useState(false)
 
   const categories = useMemo(
     () => [...new Set((foods ?? []).map((f) => f.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'de')),
@@ -75,6 +82,37 @@ export default function FoodForm({ food, initialName = '', initial, onClose }) {
     const g = parseNumber(gramsText)
     return k >= 0 && f >= 0 && g > 0 ? formatRef((g / 100) * refValue(k, f)) : null
   }
+
+  const search = async () => {
+    const searched = name.trim()
+    if (!searched || lookup?.status === 'loading') return
+    if (!navigator.onLine) return setLookup({ status: 'error', searched, message: 'Keine Internetverbindung.' })
+    setLookup({ status: 'loading', searched })
+    try {
+      const { candidates } = await lookupFood({ name: searched, categories })
+      setLookup({ status: 'done', searched, candidates })
+    } catch (err) {
+      setLookup({ status: 'error', searched, message: friendlyError(err) })
+    }
+  }
+
+  const apply = (c) => {
+    const patch = lookupPatch(c, {
+      name,
+      searched: lookup.searched,
+      category,
+      units: units.filter((u) => u.label.trim() || String(u.grams).trim()),
+    })
+    setKcal(toInput(c.kcalPer100))
+    setFat(toInput(c.fatPer100))
+    if (patch.name) setName(patch.name)
+    if (patch.category) setCategory(patch.category)
+    if (patch.units) setUnits(patch.units.map((u) => ({ key: nextKey++, label: u.label, grams: toInput(u.grams) })))
+    setAiFilled(true)
+    setLookup(null)
+    setReplacing(null)
+  }
+  const pick = (c) => (kcal.trim() || fat.trim() ? setReplacing(c) : apply(c))
 
   const updateUnit = (key, field, value) => setUnits((us) => us.map((u) => (u.key === key ? { ...u, [field]: value } : u)))
 
@@ -117,9 +155,52 @@ export default function FoodForm({ food, initialName = '', initial, onClose }) {
         </>
       }
     >
-      <Field label="Name" required error={shown.name}>
-        <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass(shown.name)} />
-      </Field>
+      <div className="flex items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <Field label="Name" required error={shown.name}>
+            <input value={name} onChange={(e) => setName(e.target.value)} className={inputClass(shown.name)} />
+          </Field>
+        </div>
+        <button
+          type="button"
+          onClick={search}
+          disabled={!name.trim() || lookup?.status === 'loading'}
+          aria-label="Nährwerte vorschlagen lassen"
+          title="Nährwerte vorschlagen lassen"
+          className="mt-[1.75rem] flex size-[3.0625rem] shrink-0 items-center justify-center rounded-chip border border-primary text-primary active:bg-primary-soft disabled:opacity-40"
+        >
+          <Sparkles size={22} />
+        </button>
+      </div>
+      {lookup && (
+        <div className="flex flex-col gap-2 rounded-card border border-border bg-bg p-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-semibold text-muted">
+              {lookup.status === 'loading' ? `Suche Werte für „${lookup.searched}“ …` : 'Vorschläge (KI-Schätzung)'}
+            </span>
+            <button type="button" onClick={() => setLookup(null)} aria-label="Schließen" className="rounded-full p-1 text-muted active:bg-border">
+              <X size={18} />
+            </button>
+          </div>
+          {lookup.status === 'error' && <p className="text-accent">{lookup.message}</p>}
+          {lookup.status === 'done' && lookup.candidates.length === 0 && <p className="text-muted">Dazu habe ich nichts gefunden.</p>}
+          {lookup.status === 'done' &&
+            lookup.candidates.map((c) => (
+              <button
+                key={c.name}
+                type="button"
+                onClick={() => pick(c)}
+                className="flex flex-col rounded-chip border border-border bg-card px-4 py-3 text-left active:border-primary"
+              >
+                <span className="font-semibold">{c.name}</span>
+                <span className="text-sm text-muted">
+                  {formatNumber(c.kcalPer100)} kcal · {formatNumber(c.fatPer100)} g Fett pro 100 g · {formatRef(refValue(c.kcalPer100, c.fatPer100))} Pkt
+                </span>
+                {c.note && <span className="text-sm text-muted">{c.note}</span>}
+              </button>
+            ))}
+        </div>
+      )}
       <Field label="Kategorie" required error={shown.category}>
         <CategoryPicker value={category} onChange={setCategory} categories={categories} error={shown.category} />
       </Field>
@@ -134,6 +215,7 @@ export default function FoodForm({ food, initialName = '', initial, onClose }) {
           <input inputMode="decimal" value={fat} onChange={(e) => setFat(e.target.value)} className={inputClass(shown.fat)} />
         </Field>
       </div>
+      {aiFilled && <p className="-mt-2 text-sm text-muted">Werte aus einer KI-Schätzung – bitte prüfen.</p>}
       <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold text-muted">Größen</span>
         {/* Same columns as the rows below: size · points · (lock instead of the bin). */}
@@ -193,6 +275,15 @@ export default function FoodForm({ food, initialName = '', initial, onClose }) {
       </div>
 
       {confirming && <ConfirmDialog onCancel={() => setConfirming(false)} onConfirm={remove} />}
+      {replacing && (
+        <ConfirmDialog
+          message="kcal und Fett durch den Vorschlag ersetzen?"
+          confirmLabel="Ersetzen"
+          danger={false}
+          onCancel={() => setReplacing(null)}
+          onConfirm={() => apply(replacing)}
+        />
+      )}
     </Sheet>
   )
 }

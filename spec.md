@@ -266,6 +266,12 @@ Photograph a meal; Claude estimates what is visible; Markus reviews and adds it 
 - **Connection test:** Einstellungen → Foto-Analyse → "KI-Analyse" sends a call without a photo; "Verbunden" means the function is deployed and accepts Markus. It costs nothing.
 - **Privacy / cost:** photos are not stored anywhere. Roughly 3–7 cents per photo depending on the model (measured during tuning); a daily cap and a spending limit protect the budget.
 
+### 4.9 Nährwert-Vorschlag (Neues Lebensmittel)
+A sparkle button next to **Name** in the food form asks Claude for typical values for the typed name (from Claude's own knowledge, **no web search**; the Cloud Function `lookupFood`, same email check, key and daily cap of 40 as the photo analysis).
+- Shows up to four variants of the food, most common first (e.g. "Wein" → Weißwein trocken, Rotwein, Sekt), each with kcal and Fett per 100 g and the points per 100 g. Nothing changes until Markus taps one.
+- Tapping fills kcal and Fett per 100 g (asks "kcal und Fett durch den Vorschlag ersetzen?" if they already hold values). The name is replaced by the variant's name only if it is still the searched text; the Kategorie is filled only if empty and one of the existing categories fits (never a new one); typical sizes (e.g. "Glas = 150 g", up to three) are added only if there are no sizes yet. Under the values: "Werte aus einer KI-Schätzung – bitte prüfen." Nothing is saved before Speichern.
+- Needs a network connection; German messages for errors, offline and a full day.
+
 ## 5. Stack & deployment
 
 - React + Vite + Tailwind CSS, Recharts (weight chart), lucide-react (icons), vite-plugin-pwa (installable, offline shell).
@@ -350,6 +356,7 @@ Clean, light, rounded cards on an off-white background, one green primary color,
 - **Reversed:** the Hinzufügen panel now stays open after an add until Markus closes it with ✕, because he usually adds several items at once. *(2026-10-05)*
 - Hinzufügen toggle: first segment renamed "Lebensmittel" → "Essen" (the label was cramped next to the camera icon). *(2026-10-05)*
 - Rechner → "Als Lebensmittel hinzufügen": opens a new Datenbank food with kcal/fat per 100 g as entered and Gramm as a first, still unnamed size; stays in Datenbank afterwards; Rechner fields are cleared. *(2026-10-09)*
+- Nährwert-Vorschlag in "Neues Lebensmittel": Claude's own knowledge (option A, no web search), list of up to four variants, also suggests Kategorie and typical sizes, shares the daily cap of 40 with the photo analysis. *(2026-10-09)*
 - Categories can be renamed/merged from a "Kategorien" list in Datenbank → Lebensmittel. *(2026-09-30)*
 - Datenbank Lebensmittel gets the same category filter chips as Hinzufügen (shared component); letter headings removed. *(2026-09-30)*
 - Free entry can take points directly instead of kcal and fat (switch "kcal & Fett | Punkte"); typed points are rounded to 0.5 like all logged entries. *(2026-10-03)*
