@@ -83,7 +83,7 @@ export default function Hinzufuegen({ date, initialMode = 'food', prefill, onClo
         {mode === 'photo' && <PhotoFlow onSave={addPhotoMeal} />}
         {mode === 'quick' && (
           <div className="rounded-card border border-border bg-card p-4">
-            <QuickEntryForm initial={prefill} submitText="Hinzufügen" onSubmit={(entry) => add('entries', entry)} />
+            <QuickEntryForm suggest initial={prefill} submitText="Hinzufügen" onSubmit={(entry) => add('entries', entry)} />
           </div>
         )}
       </div>
